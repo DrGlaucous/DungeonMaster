@@ -16,7 +16,7 @@ Planned features:
 
 lighting control should be modular.
 
-We should have a series of pre-baked sequences made using software like xLight. The manager software should just send each file sequence to the arena controller on demand. (this may be too bandwidth intensive, so we may just have a series of pre-baked instrutions inside the light manager that we can hit from the outside, see TSC)
+We should have a series of pre-baked sequences made using software like xLight. The manager software should just send each file sequence to the arena controller on demand. (this may be too bandwidth intensive, so we may just have a series of pre-baked instructions inside the light manager that we can hit from the outside, see TSC)
 
 There should be 3 ESP32s in play:
 - Computer dongle ESP32, hosts the network and sends/gets signals from each sub-part
