@@ -16,7 +16,7 @@ Planned features:
 
 lighting control should be modular.
 
-We should have a series of pre-baked sequences made using software like xLight. The manager software should just send each file sequence to the arena controller on demand.
+We should have a series of pre-baked sequences made using software like xLight. The manager software should just send each file sequence to the arena controller on demand. (this may be too bandwidth intensive, so we may just have a series of pre-baked instrutions inside the light manager that we can hit from the outside, see TSC)
 
 There should be 3 ESP32s in play:
 - Computer dongle ESP32, hosts the network and sends/gets signals from each sub-part
@@ -25,28 +25,122 @@ There should be 3 ESP32s in play:
 - (we may need to split the arena control and light sequencer into 2 separate ESP32s)
 
 
-In general everything will be controlled with special `G`-like code that sends commands to each of the sub-parts
+---
 
-Components: G specifier, tells the controller what command to send
+In general everything will be controlled with special `TSC`-like code that sends commands to each of the sub-parts
+
+Arguments are implemented just like CS-TSC, including OOB access
+Commands start with a `<` character. If a `<` is gotten before a command ends, it will be parsed as part of that command.
+Command arguments are split by one wildcard character, but the common convention is with `:`.
+
+
+
 ```
-//NOTE: WE MAY NOT USE THIS METHOD:
-//I may just specify a range (of, say, 100) for each perepherial
-G0 - Target perepherial, (gcodes sent after this will be forwared to the correct deivce), this code is always parsed by the dongle
+
+<TGTXXXX - Target perepherial XXXX, (any commands sent after this will be forwared to the correct deivce), this code is always parsed by the dongle (this is the device's UUID, NOT type)
+
 0: Dongle
 1: Box
 2: Judge Controller
 3+: Dongle (OOB)
 
-//ranges?:
-0-999: Dongle
-1000-1999: Box
-2000-2999: Judge controller
 
 
-G200 M0 R25 G10 B255
+<SLTXXXX:YYYY:ZZZZ Set Lighting Targets. Tells the target what lights to address
+XXXX
+0: All YYYY and ZZZZ are ignored
+1: Address single: YYYY, ZZZZ is ignored
+2: Address range from YYYY to ZZZZ
 
-G200: Set box lighting. sub-sequences seen below
 
+<STSXXXX:YYYY Set light Transition speed, effects will play at this speed (taking X time to loop)
+XXXX: Time in seconds
+YYYY: Time in milliseconds
+(total is the sum of these two parts)
+
+
+<SLCXXXX:YYYY:ZZZZ Set Light Color to RGB (range for each is 0-255, values larger or smaller than this will be clamped)
+XXXX: R
+YYYY: G
+ZZZZ: B
+
+<SLR Set Light Rainbow, no arguments, speed set above
+
+<SLSXXXX:YYYY:ZZZZ:AAAA:BBBB:CCCC Set Light Strobe between 2 colors, speed determined by the speed settings above
+XXXX YYYY ZZZZ: RGB of first color
+AAAA BBBB CCCC: RGB of second color
+
+
+<WAIXXXX:YYYY WAIt xxxx seconds and yyyy milliseconds before sending the next command (not actually sent, but is used by the desktop program)
+
+
+<PSH Push next command to command stack
+<POP return to calling command
+
+
+
+
+```
+
+All commands can be sent to all devices,
+if a command is invalid for a specific device, it will simply be ignored
+
+When a file is loaded, TSC execution is started at "event" #0000
+
+Other events can be called from `<PSH` and `<POP` functions
+
+
+Script command `<WAI`is not sent to the perepherials; it is used by the desktop app *only*
+
+Script command `<TGT` is handled by the base station ONLY!
+
+
+---
+
+Response packets
+```
+response packets are in plaintext, to be printed to the terminal window, each part of the response packet is delimited with ":"
+
+cccc - device type
+cccc - device id
+cccc - response type
+c - \0 - response data
+
+
+device types:
+dngl - dongle
+valid responses:
+Ok //command was gotten successfully
+
+
+judg - judge remote
+valid responses:
+X O //button ID [x] is ON
+X F //button ID [x] is OFF
+Ok //command was gotten successfully
+
+boxx - box
+X O //button ID [x] is ON
+X F //button ID [x] is OFF
+Ok //command was gotten successfully
+
+
+Button IDs:
+0000 - Start match button
+0001 - Pause/play button
+0002 - End match button
+0003 - Hold for pin
+0004 - RED wins
+0005 - BLUE wins
+0006 - RED ready
+0007 - BLUE ready
+0008 - arena door is open
+
+
+example of 2 response packets
+judg:0003:0007 O
+boxx:0002:0006 F
+boxx:0002:Ok
 
 
 ```
@@ -54,18 +148,8 @@ G200: Set box lighting. sub-sequences seen below
 
 
 
+---
 
-DMX control for the lights may be too bandwidth intensive.
-Alternative method:
-
-Several hard-baked sequences in each light
-- `M0` Set all color `R G B`
-- `M1` Set address color (ignores if address is OOB) `A R G B`
-- `M2` Set address range color (truncates if OOB) `A A R G B`
-- `M3` Set transition speed `S` (affects all color change operations)
-- `M4` Set rainbow mode (speed set above)
-- 
-- 
 
 
 
