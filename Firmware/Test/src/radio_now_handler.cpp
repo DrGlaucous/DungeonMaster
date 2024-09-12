@@ -125,8 +125,9 @@ RadioNowHandler::RadioNowHandler(
 
     esp_wifi_set_mac(WIFI_IF_STA, (uint8_t*)my_address);
 
-
-    switch(esp_wifi_set_channel(net_id, WIFI_SECOND_CHAN_ABOVE))
+    auto set_channel_error = esp_wifi_set_channel(net_id, WIFI_SECOND_CHAN_ABOVE);
+#ifdef DEBUG
+    switch(set_channel_error)
     {
         default:
         case 0:
@@ -146,7 +147,6 @@ RadioNowHandler::RadioNowHandler(
     }
 
     
-#ifdef DEBUG
     Serial.print("[NEW] ESP32 Board MAC Address:  ");
     Serial.println(WiFi.macAddress());
 #endif
@@ -198,6 +198,7 @@ TXStatus RadioNowHandler::SendPacket(RemoteGenericPacket packet, const char* pee
         return TX_FAIL;
 
     auto size = packet.get_transmission_len();
+
     esp_err_t result = esp_now_send((const uint8_t*)peer_address, packet.get_transmission_ptr(), size);
 
 

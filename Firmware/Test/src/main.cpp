@@ -1,9 +1,10 @@
 
 #include <Arduino.h>
 
-#include <radio_now_handler.h>
+#include "radio_now_handler.h"
 #include "configuration.h"
 
+#define SENDER_1
 
 RadioNowHandler* handler;
 
@@ -13,7 +14,7 @@ char other_address[] = BOX_ADDRESS;
 char key_net[] = ENCRYPTKEY_NETWORK;
 char key_peer[] = ENCRYPTKEY_PEER;
 char packetstuff[] = "OUTPUT SENDER\0";
-#elif
+#else
 char my_address[] = BOX_ADDRESS;
 char other_address[] = DONGLE_ADDRESS;
 char key_net[] = ENCRYPTKEY_NETWORK;
@@ -60,8 +61,12 @@ void loop()
 
     if(handler->CheckForPacket() == RX_SUCCESS) {
         auto packet = handler->GetLastPacket();
-        if(packet.get_data_len() > 0)
-            Serial.printf("Got packet: %s\n", packet.get_data_ptr());
+        auto datalen = packet.get_data_len();
+        if(packet.get_data_len() > 0) {
+
+            auto pp = packet.get_data_ptr();
+            Serial.printf("Got packet: %d, %s\n", datalen, pp);
+        }
         else
             Serial.printf("Error: Got packet of 0 length!\n");
     }
@@ -70,8 +75,4 @@ void loop()
 
 
 }
-
-
-
-
 

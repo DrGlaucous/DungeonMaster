@@ -31,12 +31,12 @@ enum DeviceType {
     TypeDongle = 0,
     TypeJudgeController = 1,
     TypeBox = 2,
-}
+};
 
 
 struct DeviceInfo {
-
-}
+    int ttt = 0;
+};
 
 
 

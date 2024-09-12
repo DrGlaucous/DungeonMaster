@@ -1,7 +1,0 @@
-{
-  "name": "radio_now_handler",
-  "version": "0.0.1",
-  "description": "Abscration layer for esp-now protocol",
-  "frameworks": "arduino",
-  "platforms": "espressif32"
-}
