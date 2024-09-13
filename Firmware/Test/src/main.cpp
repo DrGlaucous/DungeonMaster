@@ -1,12 +1,17 @@
 
 #include <Arduino.h>
 
-#include "radio_now_handler.h"
-#include "configuration.h"
+#include <radio_now_handler.h>
+#include <configuration.h>
+
+#include "tsc_parser.h"
 
 #define SENDER_1
 
 RadioNowHandler* handler;
+
+#define DONGLE_ADDRESS {0x30, 0xAE, 0xA4, 0x07, 0x0D, 0x64}
+#define BOX_ADDRESS {0xA0, 0x0E, 0x04, 0x0F, 0xFD, 0x64}
 
 #ifdef SENDER_1
 char my_address[] = DONGLE_ADDRESS;

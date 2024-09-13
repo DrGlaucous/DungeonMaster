@@ -31,13 +31,13 @@
             judgeControls1 = new JudgeControls();
             boxControls1 = new BoxControls();
             splitContainer1 = new SplitContainer();
+            test_button = new Button();
+            blue_team = new TeamEntryWindow();
+            red_team = new TeamEntryWindow();
             timerControls1 = new TimerControls();
             tableLayoutPanel14 = new TableLayoutPanel();
             serialManager1 = new SerialManager();
             terminal1 = new Terminal();
-            red_team = new TeamEntryWindow();
-            blue_team = new TeamEntryWindow();
-            test_button = new Button();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
@@ -51,7 +51,7 @@
             judgeControls1.Dock = DockStyle.Left;
             judgeControls1.Location = new Point(0, 0);
             judgeControls1.Name = "judgeControls1";
-            judgeControls1.Size = new Size(351, 366);
+            judgeControls1.Size = new Size(351, 349);
             judgeControls1.TabIndex = 23;
             // 
             // boxControls1
@@ -59,7 +59,7 @@
             boxControls1.Dock = DockStyle.Left;
             boxControls1.Location = new Point(351, 0);
             boxControls1.Name = "boxControls1";
-            boxControls1.Size = new Size(334, 366);
+            boxControls1.Size = new Size(334, 349);
             boxControls1.TabIndex = 24;
             // 
             // splitContainer1
@@ -82,9 +82,33 @@
             splitContainer1.Panel2.AutoScroll = true;
             splitContainer1.Panel2.Controls.Add(boxControls1);
             splitContainer1.Panel2.Controls.Add(judgeControls1);
-            splitContainer1.Size = new Size(1924, 370);
-            splitContainer1.SplitterDistance = 1111;
+            splitContainer1.Size = new Size(1342, 370);
+            splitContainer1.SplitterDistance = 774;
             splitContainer1.TabIndex = 26;
+            // 
+            // test_button
+            // 
+            test_button.Location = new Point(750, 58);
+            test_button.Name = "test_button";
+            test_button.Size = new Size(75, 23);
+            test_button.TabIndex = 33;
+            test_button.Text = "Test";
+            test_button.UseVisualStyleBackColor = true;
+            test_button.Click += test_button_Click;
+            // 
+            // blue_team
+            // 
+            blue_team.Location = new Point(512, 142);
+            blue_team.Name = "blue_team";
+            blue_team.Size = new Size(332, 128);
+            blue_team.TabIndex = 32;
+            // 
+            // red_team
+            // 
+            red_team.Location = new Point(53, 128);
+            red_team.Name = "red_team";
+            red_team.Size = new Size(424, 152);
+            red_team.TabIndex = 31;
             // 
             // timerControls1
             // 
@@ -110,7 +134,7 @@
             tableLayoutPanel14.RowStyles.Add(new RowStyle());
             tableLayoutPanel14.RowStyles.Add(new RowStyle());
             tableLayoutPanel14.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel14.Size = new Size(1930, 757);
+            tableLayoutPanel14.Size = new Size(1348, 632);
             tableLayoutPanel14.TabIndex = 27;
             // 
             // serialManager1
@@ -127,38 +151,14 @@
             terminal1.Dock = DockStyle.Fill;
             terminal1.Location = new Point(3, 416);
             terminal1.Name = "terminal1";
-            terminal1.Size = new Size(1924, 338);
+            terminal1.Size = new Size(1342, 213);
             terminal1.TabIndex = 28;
-            // 
-            // red_team
-            // 
-            red_team.Location = new Point(53, 128);
-            red_team.Name = "red_team";
-            red_team.Size = new Size(424, 152);
-            red_team.TabIndex = 31;
-            // 
-            // blue_team
-            // 
-            blue_team.Location = new Point(512, 142);
-            blue_team.Name = "blue_team";
-            blue_team.Size = new Size(332, 128);
-            blue_team.TabIndex = 32;
-            // 
-            // test_button
-            // 
-            test_button.Location = new Point(750, 58);
-            test_button.Name = "test_button";
-            test_button.Size = new Size(75, 23);
-            test_button.TabIndex = 33;
-            test_button.Text = "Test";
-            test_button.UseVisualStyleBackColor = true;
-            test_button.Click += test_button_Click;
             // 
             // ControlPanel
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1930, 757);
+            ClientSize = new Size(1348, 632);
             Controls.Add(tableLayoutPanel14);
             Name = "ControlPanel";
             Text = "Control Panel";

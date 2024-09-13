@@ -69,7 +69,7 @@ class RemoteGenericPacket {
         //copy raw packet into memory
         this->data = (uint8_t*)malloc(len);
         this->len = len;
-        memcpy(this->data, in_data, len);
+        memcpy(this->data, in_data + sizeof(int), len);
     }
 
     //must also re-malloc our heap-allocated array
@@ -126,9 +126,10 @@ class RemoteGenericPacket {
         if(data != NULL)
             free(data);
 
-        data = (uint8_t*)malloc(sizeof(size_t));
-        memset(data, 0, sizeof(size_t));
-        len = sizeof(size_t); 
+        //add the size of the "type" value + 1 extra for a null terminator in the data section
+        data = (uint8_t*)malloc(sizeof(size_t) + 1);
+        memset(data, 0, sizeof(size_t) + 1);
+        len = sizeof(size_t) + 1; 
     }
 
     //max size of the actual payload (size_t bytes are taken by the type)

@@ -1,5 +1,5 @@
 {
-  "name": "configurations",
+  "name": "configuration",
   "version": "0.0.1",
   "description": "shared definitions for projects in these sub-folders",
   "frameworks": "arduino",
