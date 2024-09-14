@@ -28,6 +28,8 @@ char packetstuff[] = "OUTPUT GETTER\0";
 #endif
 
 
+TscParser parser;
+
 void setup()
 {
     Serial.begin(115200);
@@ -48,7 +50,41 @@ void setup()
 }
 
 
-void loop()
+void loop() {
+
+    auto byte_count = Serial.available();
+    if(byte_count > 0) {
+        //+1 extra for null terminator, init to 0
+        char* byte_holder = (char*)calloc(byte_count + 1, 1);
+        Serial.readBytes(byte_holder, byte_count);
+
+        //parse out the commands
+        parser.parse_tsc(byte_holder);
+
+        free(byte_holder);
+
+        int command_count = parser.get_queue_length();
+
+        if(!command_count)
+            Serial.printf("Did not get any valid commands!\n");
+
+        for(int i = 0; i < command_count; ++i) {
+            auto command = parser.pop_tsc_command();
+
+            Serial.printf("Command no: %d, argc: %d, type: %d\n", i, command.command_count, command.type);
+
+        }
+
+
+    }
+
+
+}
+
+
+
+
+void loop2()
 {
 
     auto out_packet = RemoteGenericPacket(

@@ -1,0 +1,7 @@
+{
+  "name": "tsc_parser",
+  "version": "0.0.1",
+  "description": "turns strings into TSC commands + arguments",
+  "frameworks": "arduino",
+  "platforms": "espressif32"
+}

@@ -42,19 +42,19 @@ struct DeviceInfo {
 
 //global define variables
 
-DeviceInfo g_dongle_1 = {
+const DeviceInfo g_dongle_1 = {
     {0x30, 0xAE, 0xA4, 0x07, 0x0D, 0x64}, //MAC address
     ENCRYPTKEY_PEER, //peer localkey
     TypeDongle, //device type
     0, //uuid
 };
-DeviceInfo g_jcontroller_1 = {
+const DeviceInfo g_jcontroller_1 = {
     {0xA1, 0xEE, 0xF4, 0x2F, 0xF0, 0x64},
     ENCRYPTKEY_PEER,
     TypeDongle,
     1,
 };
-DeviceInfo g_box_1 = {
+const DeviceInfo g_box_1 = {
     {0xA0, 0x0E, 0x04, 0x0F, 0xFD, 0x64},
     ENCRYPTKEY_PEER,
     TypeDongle,
