@@ -158,15 +158,15 @@ class RadioNowHandler
     bool add_peer(const char* peer_address, const char* key_s);
 
     //if peer_address is null, the message is broadcast
-    TXStatus SendPacket(RemoteGenericPacket packet, const char* peer_address);
+    TXStatus send_packet(RemoteGenericPacket packet, const char* peer_address);
 
 
-    RemoteGenericPacket GetLastPacket();
-    RXStatus CheckForPacket();
+    RemoteGenericPacket get_last_packet();
+    RXStatus check_for_packet();
 
     //returns the time between when the packet was actually gotten and when this function was called
     //because packets can sit in the queue for a bit
-    uint64_t GetDeltaTime();
+    uint64_t get_delta_time();
 
 
     private:

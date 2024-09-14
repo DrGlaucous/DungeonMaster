@@ -38,6 +38,10 @@ class TscActioner : public TscParser {
                     break;
                 }
                 default: {
+                    //forward command to "dongle" for now (example)
+                    auto string_cmd = command.stringify_command();
+                    RemoteGenericPacket packet = RemoteGenericPacket((uint8_t*)&string_cmd, string_cmd.size(), 0);
+                    radio_handler.send_packet(packet, (char*)g_dongle_1.mac_address);
                     break;
                 }
             }

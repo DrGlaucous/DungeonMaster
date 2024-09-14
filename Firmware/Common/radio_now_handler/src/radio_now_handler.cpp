@@ -192,7 +192,7 @@ bool RadioNowHandler::add_peer(const char* peer_address, const char* key_peer) {
 
 }
 
-TXStatus RadioNowHandler::SendPacket(RemoteGenericPacket packet, const char* peer_address) {
+TXStatus RadioNowHandler::send_packet(RemoteGenericPacket packet, const char* peer_address) {
 
     if(!active || packet.get_transmission_len() > ESP_NOW_MAX_DATA_LEN)
         return TX_FAIL;
@@ -210,7 +210,7 @@ TXStatus RadioNowHandler::SendPacket(RemoteGenericPacket packet, const char* pee
 
 }
 
-RXStatus RadioNowHandler::CheckForPacket()
+RXStatus RadioNowHandler::check_for_packet()
 {
     //do not try if we're not enabled
     if(!active)
@@ -229,11 +229,11 @@ RXStatus RadioNowHandler::CheckForPacket()
     return RX_QUEUE_EMPTY;
 }
 
-RemoteGenericPacket RadioNowHandler::GetLastPacket() {
+RemoteGenericPacket RadioNowHandler::get_last_packet() {
     return packet;
 }
 
-uint64_t RadioNowHandler::GetDeltaTime()
+uint64_t RadioNowHandler::get_delta_time()
 {
     if(!active)
         return 0;

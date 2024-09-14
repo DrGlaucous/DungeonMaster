@@ -69,7 +69,8 @@ void loop() {
             Serial.printf("Did not get any valid commands!\n");
 
         for(int i = 0; i < command_count; ++i) {
-            auto command = parser.pop_tsc_command();
+            TscCommand command;
+            auto result = parser.pop_tsc_command(command);
 
             Serial.printf("Command no: %d, argc: %d, type: %d\n", i, command.command_count, command.type);
 
@@ -94,14 +95,14 @@ void loop2()
     );
 
 
-    if(handler->SendPacket(out_packet, other_address))
+    if(handler->send_packet(out_packet, other_address))
         Serial.printf("sent packet: %s\n", out_packet.get_data_ptr());
     else
         Serial.printf("TX Fail!\n");
 
 
-    if(handler->CheckForPacket() == RX_SUCCESS) {
-        auto packet = handler->GetLastPacket();
+    if(handler->check_for_packet() == RX_SUCCESS) {
+        auto packet = handler->get_last_packet();
         auto datalen = packet.get_data_len();
         if(packet.get_data_len() > 0) {
 

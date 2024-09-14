@@ -11,6 +11,7 @@ using std::queue;
 
 //turns a command into a number that can be matched in a switch statement
 #define IS_COMMAND(c1, c2, c3) (c1 | (c2 << 8) | c3 << 16)
+
 //converts argc into bytecount, so 2 args like xxxx:yyyy is 9 bytes
 #define COMMAND_LEN(argc) (argc - (1 * !!argc) + (argc * 4))
 

@@ -8,7 +8,6 @@ using std::vector;
 using std::queue;
 
 
-
 vector<uint8_t> TscCommand::stringify_command() {
     //number of argchars + 4 for leading + 1 for null terminator
     auto bytecount = COMMAND_LEN(command_count) + 5;
@@ -16,20 +15,27 @@ vector<uint8_t> TscCommand::stringify_command() {
     size_t idx = 0;
 
     //decompose type into explicit chars, '<CMD'
-    vec[0] = '<';
-    vec[1] = type & 0xFF;
-    vec[2] = (type >> 8) & 0xFF;
-    vec[3] = (type >> 16) & 0xFF;
+    vec[idx++] = '<';
+    vec[idx++] = type & 0xFF;
+    vec[idx++] = (type >> 8) & 0xFF;
+    vec[idx++] = (type >> 16) & 0xFF;
 
-    idx += 4;
-
-
+    //re-compose command argument into a TSC string (including over/underflows)
     for(int i = 0; i < command_count; ++i) {
 
         //break number into 4 digit character
-        
+        vec[idx++] = (uint8_t)(tsc_args[i] / 1000 + '0');
+        vec[idx++] = (uint8_t)((tsc_args[i] % 1000) / 100 + '0');
+        vec[idx++] = (uint8_t)((tsc_args[i] % 100)  / 10 + '0');
+        vec[idx++] = (uint8_t)((tsc_args[i] % 10)  / 1 + '0');
 
+        //add argument delimiter
+        if(i < command_count - 1) {
+            vec[idx++] = ':';
+        }
     }
+
+    return vec;
 }
 
 
