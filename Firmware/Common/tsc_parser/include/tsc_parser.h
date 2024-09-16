@@ -27,6 +27,8 @@ enum TscCommandType {
     TSC_WAI = IS_COMMAND('W', 'A', 'I'), //pc only
     TSC_PSH = IS_COMMAND('P', 'S', 'H'), //pc only
     TSC_POP = IS_COMMAND('P', 'O', 'P'), //pc only
+    TSC_KEY = IS_COMMAND('K', 'E', 'Y'), //pc only
+    TSC_FRE = IS_COMMAND('F', 'R', 'E'), //pc only
 };
 
 //no need for string commands: those 

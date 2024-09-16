@@ -3,7 +3,10 @@
 //Configuration
 
 #include <esp_now.h>
+#include <string>
 
+
+using std::string;
 
 ////////////TYPE DEFINITIONS///////////////
 
@@ -16,13 +19,22 @@ enum DeviceType {
 
 
 struct DeviceInfo {
-    uint8_t mac_address[ESP_NOW_ETH_ALEN];
-    uint8_t local_master_key[ESP_NOW_KEY_LEN];
+    char mac_address[ESP_NOW_ETH_ALEN];
+    char local_master_key[ESP_NOW_KEY_LEN];
     DeviceType type;
     size_t uu_id;
 };
 
 
+enum PacketType {
+    PacketTscCommand = 1,
+    PacketResponse = 2,
+};
+
+enum ResponseType {
+    PacketGetOk = 0,
+    ButtonStatus = 1,
+};
 
 ////////RADIO SETTINGS////////
 
@@ -51,13 +63,24 @@ const DeviceInfo g_dongle_1 = {
 const DeviceInfo g_jcontroller_1 = {
     {0xA1, 0xEE, 0xF4, 0x2F, 0xF0, 0x64},
     ENCRYPTKEY_PEER,
-    TypeDongle,
+    TypeJudgeController,
     1,
 };
 const DeviceInfo g_box_1 = {
     {0xA0, 0x0E, 0x04, 0x0F, 0xFD, 0x64},
     ENCRYPTKEY_PEER,
-    TypeDongle,
+    TypeBox,
     2,
 };
 
+//global method (this doesn't really fit anywhere else...)
+RemoteGenericPacket assemble_response_packet(size_t device_type, size_t device_id, ResponseType response_type, const char* data) {
+
+    string payload = "<";
+    payload += std::to_string(device_type) + ':' + std::to_string(device_id) + ':' + std::to_string((int)response_type) + ':';
+
+    //note: data should be null-terminated!
+    payload += data;
+
+    return RemoteGenericPacket((const uint8_t*)payload.c_str(), payload.size() + 1, PacketResponse);
+}

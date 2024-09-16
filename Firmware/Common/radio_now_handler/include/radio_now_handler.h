@@ -42,7 +42,7 @@ class RemoteGenericPacket {
         }
 
         //make holder of proper size
-        this->data = (uint8_t*)malloc(len + sizeof(type));
+        this->data = (uint8_t*)calloc(len + sizeof(type), 1);
         this->len = len + sizeof(type);
         memcpy(this->data, &type, sizeof(type));
         memcpy(this->data + sizeof(type), in_data, len);
@@ -114,6 +114,11 @@ class RemoteGenericPacket {
     //return constant pointer to where the actual payload starts, minus header
     const uint8_t* get_data_ptr() {
         return data + sizeof(size_t);
+    }
+
+    //return the header of the packet
+    size_t get_packet_type() {
+        return (size_t)*data;
     }
 
 

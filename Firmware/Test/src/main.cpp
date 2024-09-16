@@ -8,8 +8,6 @@
 
 #define SENDER_1
 
-RadioNowHandler* handler;
-
 #define DONGLE_ADDRESS {0x30, 0xAE, 0xA4, 0x07, 0x0D, 0x64}
 #define BOX_ADDRESS {0xA0, 0x0E, 0x04, 0x0F, 0xFD, 0x64}
 
@@ -27,6 +25,13 @@ char key_peer[] = ENCRYPTKEY_PEER;
 char packetstuff[] = "OUTPUT GETTER\0";
 #endif
 
+//MUST be initialized in the mainloop, not in the constructor!
+// RadioNowHandler handler = RadioNowHandler(
+//         NETWORKID,
+//         key_net,
+//         my_address
+//     );
+RadioNowHandler* handler;
 
 TscParser parser;
 
@@ -50,7 +55,7 @@ void setup()
 }
 
 
-void loop() {
+void loop2() {
 
     auto byte_count = Serial.available();
     if(byte_count > 0) {
@@ -85,7 +90,7 @@ void loop() {
 
 
 
-void loop2()
+void loop()
 {
 
     auto out_packet = RemoteGenericPacket(

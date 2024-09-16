@@ -112,8 +112,14 @@ void TscParser::parse_tsc(const char* tsc_string) {
                 }
                 break;
             }
-            //unused commands: advance cursor to next command
-            //case TSC_TGT:
+            case TSC_TGT: {
+                if(!parse_tsc_arg_count(&cursor, end_cursor, 1, TSC_TGT)) {
+                    hit_end = true;
+                    continue;
+                }
+                break;
+            }
+            //unused commands (should be processed application-side): advance cursor to next command
             //case TSC_WAI:
             //case TSC_PSH:
             //case TSC_POP:

@@ -29,7 +29,7 @@ There should be 3 ESP32s in play:
 
 In general everything will be controlled with special `TSC`-like code that sends commands to each of the sub-parts
 
-Arguments are implemented just like CS-TSC, including OOB access
+Arguments are implemented just like CS-TSC, including OOB access.
 Commands start with a `<` character. If a `<` is gotten before a command ends, it will be parsed as part of that command.
 Command arguments are split by one wildcard character, but the common convention is with `:`.
 
@@ -90,9 +90,13 @@ When a file is loaded, TSC execution is started at "event" #0000
 Other events can be called from `<PSH` and `<POP` functions
 
 
+
 Script command `<WAI`is not sent to the perepherials; it is used by the desktop app *only*
 
 Script command `<TGT` is handled by the base station ONLY!
+
+
+`KEY` - prevent feedback (like buttons) from halting and changing text script (all feedback commands are stored in a queue until `FRE` is called, then they're all run at once)
 
 
 ---
@@ -106,12 +110,13 @@ cccc - device id
 cccc - response type
 c - \0 - response data
 
+<cccc:cccc:cccc:data\0
 
 device types:
 dngl - dongle
 valid responses:
-Ok //command was gotten successfully
-
+PacketGetOk //command was gotten successfully
+ButtonStatus //reporting a button state change
 
 judg - judge remote
 valid responses:
@@ -126,15 +131,15 @@ Ok //command was gotten successfully
 
 
 Button IDs:
-0000 - Start match button
-0001 - Pause/play button
-0002 - End match button
-0003 - Hold for pin
-0004 - RED wins
-0005 - BLUE wins
-0006 - RED ready
-0007 - BLUE ready
-0008 - arena door is open
+0000 - Start match button (1 = pressed)
+0001 - Pause/play button (1 = pressed)
+0002 - End match button (1 = pressed)
+0003 - Hold for pin (1 = pressed)
+0004 - RED wins (1 = pressed)
+0005 - BLUE wins (1 = pressed)
+0006 - RED ready (1 = pressed)
+0007 - BLUE ready (1 = pressed)
+0008 - arena door (1 = open)
 
 
 example of 2 response packets
