@@ -79,10 +79,10 @@ void setup()
     );
 
     //set up network devices
-    // handler->add_peer(
-    //     g_jcontroller_1.mac_address,
-    //     g_jcontroller_1.local_master_key
-    // );
+    handler->add_peer(
+        g_jcontroller_1.mac_address,
+        g_jcontroller_1.local_master_key
+    );
     handler->add_peer(
         g_box_1.mac_address,
         g_box_1.local_master_key
