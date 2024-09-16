@@ -174,14 +174,15 @@ RadioNowHandler::~RadioNowHandler()
 
 bool RadioNowHandler::add_peer(const char* peer_address, const char* key_peer) {
 
-    Serial.printf("Adding peer with mac: %x:%x:%x:%x:%x:%x\n---\n",
-        peer_address[0],
-        peer_address[1],
-        peer_address[2],
-        peer_address[3],
-        peer_address[4],
-        peer_address[5]
-    );
+    //Debug: see MAC associated with this peer
+    // Serial.printf("Adding peer with mac: %x:%x:%x:%x:%x:%x\n---\n",
+    //     peer_address[0],
+    //     peer_address[1],
+    //     peer_address[2],
+    //     peer_address[3],
+    //     peer_address[4],
+    //     peer_address[5]
+    // );
 
     esp_now_peer_info_t peer = {};// = {*peer_address, *key_s};
 
