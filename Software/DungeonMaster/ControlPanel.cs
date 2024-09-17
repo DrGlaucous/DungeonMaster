@@ -1,3 +1,6 @@
+using static DungeonMaster.SerialManager;
+using static DungeonMaster.Terminal;
+
 namespace DungeonMaster
 {
     public partial class ControlPanel : Form
@@ -23,6 +26,10 @@ namespace DungeonMaster
                 red_team.bind_data(scoreboard_data.team_red_data);
                 blue_team.bind_data(scoreboard_data.team_blue_data);
             }
+
+            //link terminal to serial manager
+            serialManager1.EventHandler += new OnSerialGetEventHandler(terminal1.write_to_window);
+            terminal1.EventHandler += new OnSerialSendEventHandler(serialManager1.SendString);
 
         }
 

@@ -139,11 +139,10 @@
             // 
             // serialManager1
             // 
-            serialManager1.AutoSize = true;
             serialManager1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             serialManager1.Location = new Point(3, 3);
             serialManager1.Name = "serialManager1";
-            serialManager1.Size = new Size(401, 31);
+            serialManager1.Size = new Size(461, 31);
             serialManager1.TabIndex = 29;
             // 
             // terminal1
@@ -168,7 +167,6 @@
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
             tableLayoutPanel14.ResumeLayout(false);
-            tableLayoutPanel14.PerformLayout();
             ResumeLayout(false);
         }
 

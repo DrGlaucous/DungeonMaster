@@ -92,6 +92,7 @@
             serial_send_button.TabIndex = 23;
             serial_send_button.Text = "Send";
             serial_send_button.UseVisualStyleBackColor = true;
+            serial_send_button.Click += serial_send_button_Click;
             // 
             // serial_clear_button
             // 
@@ -103,11 +104,13 @@
             serial_clear_button.TabIndex = 24;
             serial_clear_button.Text = "Clear";
             serial_clear_button.UseVisualStyleBackColor = true;
+            serial_clear_button.Click += serial_clear_button_Click;
             // 
             // serial_inbox
             // 
             serial_inbox.BackColor = SystemColors.ControlDarkDark;
             serial_inbox.Dock = DockStyle.Fill;
+            serial_inbox.ForeColor = Color.Lime;
             serial_inbox.Location = new Point(3, 3);
             serial_inbox.Multiline = true;
             serial_inbox.Name = "serial_inbox";

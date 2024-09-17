@@ -30,7 +30,7 @@
         {
             tableLayoutPanel1 = new TableLayoutPanel();
             port_list = new ComboBox();
-            port_scan = new Button();
+            port_scan_btn = new Button();
             connect_btn = new Button();
             gen_label_1 = new Label();
             baud_list = new ComboBox();
@@ -49,7 +49,7 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.Controls.Add(port_list, 1, 0);
-            tableLayoutPanel1.Controls.Add(port_scan, 0, 0);
+            tableLayoutPanel1.Controls.Add(port_scan_btn, 0, 0);
             tableLayoutPanel1.Controls.Add(connect_btn, 4, 0);
             tableLayoutPanel1.Controls.Add(gen_label_1, 2, 0);
             tableLayoutPanel1.Controls.Add(baud_list, 3, 0);
@@ -65,22 +65,24 @@
             // 
             port_list.Dock = DockStyle.Fill;
             port_list.FormattingEnabled = true;
+            port_list.ImeMode = ImeMode.NoControl;
             port_list.Location = new Point(48, 3);
             port_list.Name = "port_list";
             port_list.Size = new Size(131, 23);
             port_list.TabIndex = 1;
             // 
-            // port_scan
+            // port_scan_btn
             // 
-            port_scan.AutoSize = true;
-            port_scan.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            port_scan.Dock = DockStyle.Fill;
-            port_scan.Location = new Point(3, 3);
-            port_scan.Name = "port_scan";
-            port_scan.Size = new Size(39, 36);
-            port_scan.TabIndex = 1;
-            port_scan.Text = "Port";
-            port_scan.UseVisualStyleBackColor = true;
+            port_scan_btn.AutoSize = true;
+            port_scan_btn.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            port_scan_btn.Dock = DockStyle.Fill;
+            port_scan_btn.Location = new Point(3, 3);
+            port_scan_btn.Name = "port_scan_btn";
+            port_scan_btn.Size = new Size(39, 36);
+            port_scan_btn.TabIndex = 1;
+            port_scan_btn.Text = "Port";
+            port_scan_btn.UseVisualStyleBackColor = true;
+            port_scan_btn.Click += port_scan_btn_Click;
             // 
             // connect_btn
             // 
@@ -93,6 +95,7 @@
             connect_btn.TabIndex = 3;
             connect_btn.Text = "Connect";
             connect_btn.UseVisualStyleBackColor = true;
+            connect_btn.Click += connect_btn_Click;
             // 
             // gen_label_1
             // 
@@ -132,7 +135,7 @@
 
         private TableLayoutPanel tableLayoutPanel1;
         private ComboBox port_list;
-        private Button port_scan;
+        private Button port_scan_btn;
         private Button connect_btn;
         private Label gen_label_1;
         private ComboBox baud_list;
