@@ -6,6 +6,7 @@ namespace DungeonMaster
 {
     public partial class ControlPanel : Form
     {
+
         public ControlPanel()
         {
             InitializeComponent();
@@ -19,27 +20,37 @@ namespace DungeonMaster
 
             //set and bind team sub-windows
             {
-                scoreboard_data.team_red_data.form_label = "Red Team";
-                scoreboard_data.team_red_data.form_color = Color.FromArgb(255, 192, 192);
-                scoreboard_data.team_blue_data.form_label = "Blue Team";
-                scoreboard_data.team_blue_data.form_color = Color.FromArgb(192, 192, 255);
+                team_red_data.FormLabel = "Red Team";
+                team_red_data.FormColor = Color.FromArgb(255, 192, 192);
+                team_blue_data.FormLabel = "Blue Team";
+                team_blue_data.FormColor = Color.FromArgb(192, 192, 255);
                 //sub-menus will now have control over this data
-                red_team.bind_data(scoreboard_data.team_red_data);
-                blue_team.bind_data(scoreboard_data.team_blue_data);
+                red_team.BindData(team_red_data);
+                blue_team.BindData(team_blue_data);
+
+                //scoreboard will now display this data
+                scoreboard.BindData(team_red_data, team_blue_data);
             }
 
             //link terminal to serial manager
             serialManager1.EventHandler += new OnSerialGetEventHandler(terminal1.write_to_window);
             terminal1.EventHandler += new OnSerialSendEventHandler(serialManager1.SendString);
 
+            //testing stuff:
+            scoreboard.AddTimeMajor(TimeSpan.FromSeconds(32));
+            //scoreboard.StartStopwatch();
             TSCEngine engine = new TSCEngine();
             engine.LoadAndParseScript("");
+
 
         }
 
 
+        //team data (names, bot images)
+        public TeamEntryData team_red_data = new();
+        public TeamEntryData team_blue_data = new();
 
-        private ScoreboardData scoreboard_data = new();
+
         private Scoreboard scoreboard = new();
         private StreamOverlay stream_overlay = new();
 
@@ -50,18 +61,6 @@ namespace DungeonMaster
         }
     }
 
-    //non-form classes must be placed down here
-    public class ScoreboardData
-    {
-        //timers
-        public TimeSpan main_timer = TimeSpan.Zero;
-        public TimeSpan pin_timer = TimeSpan.Zero;
 
-        //team data (names, bot images)
-        public TeamEntryData team_red_data = new();
-        public TeamEntryData team_blue_data = new();
-
-
-    }
 
 }

@@ -107,7 +107,7 @@
             // 
             red_team.Location = new Point(53, 128);
             red_team.Name = "red_team";
-            red_team.Size = new Size(424, 152);
+            red_team.Size = new Size(329, 218);
             red_team.TabIndex = 31;
             // 
             // timerControls1

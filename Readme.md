@@ -78,7 +78,19 @@ AAAA BBBB CCCC: RGB of second color
 <POP return to calling command
 
 
-
+concentrated commands:
+<TGTXXXX
+<SLTXXXX:YYYY:ZZZZ
+<STSXXXX:YYYY
+<SLCXXXX:YYYY:ZZZZ
+<SLR
+<SLSXXXX:YYYY:ZZZZ:AAAA:BBBB:CCCC
+<WAIXXXX:YYYY //PC
+<PSHXXXX //PC
+<POP //PC
+<KEY //PC
+<FRE //PC
+<EVE //PC
 
 ```
 
@@ -97,6 +109,9 @@ Script command `<TGT` is handled by the base station ONLY!
 
 
 `KEY` - prevent feedback (like buttons) from halting and changing text script (all feedback commands are stored in a queue until `FRE` is called, then they're all run at once)
+
+if `KEY` is on, events are run sequentially, the next event will not start until the current one is finished.
+if it is off, event triggers will inturrupt the current event to run the new one. If there are multiple commands waiting in the queue when `FRE` is called, all are run up until they either end or put the TSC engine in a `wait` state, then the next one is started.
 
 
 ---

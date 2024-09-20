@@ -36,14 +36,14 @@ namespace DungeonMaster
             label3 = new Label();
             browse_button = new Button();
             team_field = new TextBox();
-            pictureBox1 = new PictureBox();
+            BotImageWindow = new PictureBox();
             label2 = new Label();
             bot_field = new TextBox();
             team_color_label = new Label();
             layout_frame.SuspendLayout();
             tableLayoutPanel6.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)BotImageWindow).BeginInit();
             SuspendLayout();
             // 
             // layout_frame
@@ -75,7 +75,7 @@ namespace DungeonMaster
             tableLayoutPanel6.Controls.Add(label1, 0, 0);
             tableLayoutPanel6.Controls.Add(flowLayoutPanel1, 2, 0);
             tableLayoutPanel6.Controls.Add(team_field, 1, 0);
-            tableLayoutPanel6.Controls.Add(pictureBox1, 2, 1);
+            tableLayoutPanel6.Controls.Add(BotImageWindow, 2, 1);
             tableLayoutPanel6.Controls.Add(label2, 0, 1);
             tableLayoutPanel6.Controls.Add(bot_field, 1, 1);
             tableLayoutPanel6.Dock = DockStyle.Fill;
@@ -126,6 +126,7 @@ namespace DungeonMaster
             browse_button.TabIndex = 14;
             browse_button.Text = "Browse";
             browse_button.UseVisualStyleBackColor = true;
+            browse_button.Click += browse_button_Click;
             // 
             // team_field
             // 
@@ -135,14 +136,15 @@ namespace DungeonMaster
             team_field.TabIndex = 10;
             team_field.LostFocus += team_field_lost_focus;
             // 
-            // pictureBox1
+            // BotImageWindow
             // 
-            pictureBox1.Dock = DockStyle.Fill;
-            pictureBox1.Location = new Point(222, 38);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(277, 179);
-            pictureBox1.TabIndex = 15;
-            pictureBox1.TabStop = false;
+            BotImageWindow.Dock = DockStyle.Fill;
+            BotImageWindow.Location = new Point(222, 38);
+            BotImageWindow.Name = "BotImageWindow";
+            BotImageWindow.Size = new Size(277, 179);
+            BotImageWindow.SizeMode = PictureBoxSizeMode.Zoom;
+            BotImageWindow.TabIndex = 15;
+            BotImageWindow.TabStop = false;
             // 
             // label2
             // 
@@ -159,6 +161,7 @@ namespace DungeonMaster
             bot_field.Name = "bot_field";
             bot_field.Size = new Size(137, 23);
             bot_field.TabIndex = 12;
+            bot_field.Leave += bot_field_lost_focus;
             // 
             // team_color_label
             // 
@@ -182,7 +185,7 @@ namespace DungeonMaster
             tableLayoutPanel6.PerformLayout();
             flowLayoutPanel1.ResumeLayout(false);
             flowLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)BotImageWindow).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -196,7 +199,7 @@ namespace DungeonMaster
         private Label label3;
         private Button browse_button;
         private TextBox team_field;
-        private PictureBox pictureBox1;
+        private PictureBox BotImageWindow;
         private Label label2;
         private TextBox bot_field;
         private Label team_color_label;
