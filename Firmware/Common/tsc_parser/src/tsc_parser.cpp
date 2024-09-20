@@ -123,6 +123,7 @@ void TscParser::parse_tsc(const char* tsc_string) {
             //case TSC_WAI:
             //case TSC_PSH:
             //case TSC_POP:
+            //case TSC_EVE:
             default: {
                 break;
             }

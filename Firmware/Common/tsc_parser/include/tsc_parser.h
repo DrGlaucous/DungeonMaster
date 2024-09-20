@@ -29,6 +29,7 @@ enum TscCommandType {
     TSC_POP = IS_COMMAND('P', 'O', 'P'), //pc only
     TSC_KEY = IS_COMMAND('K', 'E', 'Y'), //pc only
     TSC_FRE = IS_COMMAND('F', 'R', 'E'), //pc only
+    TSC_EVE = IS_COMMAND('E', 'V', 'E'), //pc only
 };
 
 //no need for string commands: those 

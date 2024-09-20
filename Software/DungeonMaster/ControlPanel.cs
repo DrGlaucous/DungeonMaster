@@ -1,5 +1,6 @@
 using static DungeonMaster.SerialManager;
 using static DungeonMaster.Terminal;
+using static DungeonMaster.TSCEngine;
 
 namespace DungeonMaster
 {
@@ -30,6 +31,9 @@ namespace DungeonMaster
             //link terminal to serial manager
             serialManager1.EventHandler += new OnSerialGetEventHandler(terminal1.write_to_window);
             terminal1.EventHandler += new OnSerialSendEventHandler(serialManager1.SendString);
+
+            TSCEngine engine = new TSCEngine();
+            engine.LoadAndParseScript("");
 
         }
 
