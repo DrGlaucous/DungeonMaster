@@ -16,9 +16,22 @@ namespace DungeonMaster
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Scoreboard scoreboard = new();
         public MainWindow()
         {
             InitializeComponent();
+
+            //if scoreboard doesn't exist, make it and show it
+            scoreboard ??= new Scoreboard();
+            scoreboard.Show();
         }
+
+
+        //close everything with this window
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
     }
 }

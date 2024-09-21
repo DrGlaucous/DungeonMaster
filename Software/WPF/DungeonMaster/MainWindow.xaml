@@ -5,8 +5,55 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DungeonMaster"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Control Panel" Height="851" Width="1535" Background="#FFEFEFEF" Closed="Window_Closed">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <local:SerialManager HorizontalAlignment="Left" VerticalAlignment="Center" Height="45" Width="321"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="92*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="93*"/>
+            </Grid.ColumnDefinitions>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="4"/>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Center" Width="6"/>
+            <ScrollViewer HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Disabled">
+                <Grid Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="218*"/>
+                        </Grid.ColumnDefinitions>
+                        <local:TeamEntryWindow HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                        <local:TeamEntryWindow Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+                    </Grid>
+                    <local:TimerControl HorizontalAlignment="Left" VerticalAlignment="Top" Margin="2,0,0,0"/>
+                </Grid>
+            </ScrollViewer>
+            <ScrollViewer VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Visible" Grid.Column="2">
+                <Grid Grid.Row="2" HorizontalAlignment="Left" Width="600">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <local:JudgeControls Margin="3,0,0,0"/>
+                    <local:BoxControls Grid.Column="1" Margin="3,0,0,0"/>
+                </Grid>
+
+            </ScrollViewer>
+
+            <Border BorderBrush="Black" BorderThickness="1"/>
+            <Border BorderBrush="Black" BorderThickness="1" Grid.Column="2"/>
+        </Grid>
+        <local:Terminal Grid.Row="2" Margin="3,3,3,3"/>
 
     </Grid>
 </Window>

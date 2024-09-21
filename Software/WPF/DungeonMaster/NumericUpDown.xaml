@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="DungeonMaster.NumericUpDown"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DungeonMaster"
+             mc:Ignorable="d" Height="20" Width="145">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid HorizontalAlignment="Left" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button x:Name="UpArrow" Content="  ▲  " FontSize="6" Click="UpArrow_Click"/>
+            <Button x:Name="DownArrow" Content="  ▼  " Grid.Row="1" FontSize="6" Click="DownArrow_Click"/>
+        </Grid>
+        <TextBox x:Name="NumberInput" TextWrapping="Wrap" PreviewTextInput="PreviewTextInput2" TextChanged="GotText" MouseWheel="MouseWheel2" PreviewKeyDown="KeyDown2"/>
+
+    </Grid>
+</UserControl>

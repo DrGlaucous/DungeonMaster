@@ -1,0 +1,27 @@
+﻿<UserControl x:Class="DungeonMaster.JudgeControls"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DungeonMaster"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Button Content="Start Match" Background="#FFC3FFC1"/>
+        <Button Grid.Column="1" Content="Stopwatch"/>
+        <Button Content="Pause/Play Timer" Grid.Row="1" Background="#FFFEFFB9"/>
+        <Button Grid.Column="1" Content="Red Wins" Grid.Row="1" Background="#FFFFB1B1"/>
+        <Button Content="End Match" Grid.Row="2" Background="#FFFFB0B0"/>
+        <Button Grid.Column="1" Content="Blue Wins" Grid.Row="2" Background="#FFAFC7FF"/>
+
+    </Grid>
+</UserControl>
