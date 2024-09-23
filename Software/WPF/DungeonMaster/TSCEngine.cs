@@ -288,6 +288,11 @@ namespace DungeonMaster
 
             }
 
+            //forcibly add <END command to protect against infinite loops
+            //intentional loops can still be made with <EVE
+            TSCObject endobj = new() { OPCode = "END" };
+            object_list.Add(endobj);
+
             return object_list;
         }
 
@@ -358,8 +363,8 @@ namespace DungeonMaster
                                     {
                                         try
                                         {
-                                            var minutes = GetNumberFromString(command.arguments[0]);
-                                            var seconds = GetNumberFromString(command.arguments[1]);
+                                            var seconds = GetNumberFromString(command.arguments[0]);
+                                            var millis = GetNumberFromString(command.arguments[1]);
 
 
                                             event_stack.Push((i, j + 1));
@@ -370,9 +375,9 @@ namespace DungeonMaster
                                             seeking = true;
 
                                             //start callback timer
-                                            if (seconds + minutes * 60 > 0)
+                                            if (millis + seconds * 1000 > 0)
                                             {
-                                                wait_timer.Interval = (seconds + minutes * 60) * 1000;
+                                                wait_timer.Interval = millis + seconds * 1000;
                                                 wait_timer.Start();
                                             }
                                             else
@@ -450,6 +455,7 @@ namespace DungeonMaster
                                     }
 
                             }
+
 
 
                             //stop running this event if we've entered "seeking" mode
@@ -592,8 +598,16 @@ namespace DungeonMaster
             ArenaDoor = 8,
         }
 
-        public static void ParseResponse(string input)
+
+        public delegate void OnRunEventHandler(int event_no);
+        public event OnRunEventHandler? RunEventHandler; //sends output to TSC engine
+
+        //currently parses one input at a time
+        public void ParseResponse(string input)
         {
+            //test
+            //input = "<1:13:1:12 O\n";
+
             string[] split_strings = Regex.Split(input, "[<:]");
 
             //all responses should have 4 parts (+1 for anything that comes before the '<')
@@ -613,11 +627,12 @@ namespace DungeonMaster
                 case ResponseType.ButtonStatus:
                     {
                         string[] split_response = Regex.Split(response_data, " ");
-                        ButtonId button_id = (ButtonId)Int32.Parse(split_response[0]);
-                        bool status = split_response[1] == "O";
+                        int button_id = Int32.Parse(split_response[0]);
+                        bool status = split_response[1][0] == 'O';
 
-                        //run event based on button number + status
-
+                        //run event based on button number + status "on" events are 2000 range, off events are 1000 range
+                        int event_num = 1000 * (status? 1 : 2) + button_id;
+                        RunEventHandler?.Invoke(event_num);
 
                         break;
                     }

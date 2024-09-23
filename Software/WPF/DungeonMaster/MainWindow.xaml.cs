@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static DungeonMaster.ResponseEngine;
 using static DungeonMaster.SerialManager;
 using static DungeonMaster.Terminal;
 using static DungeonMaster.TSCEngine;
@@ -20,6 +21,7 @@ namespace DungeonMaster
     public partial class MainWindow : Window
     {
         private TSCEngine TextScriptEngine = new();
+        private ResponseEngine ResponseEngine = new();
         private Scoreboard Scoreboard = new();
 
         //team data (names, bot images)
@@ -52,13 +54,19 @@ namespace DungeonMaster
                 Scoreboard.BindData(TeamRedData, TeamBlueData);
             }
 
-            //link terminal to serial manager
-            SerialManager.EventHandler += new OnSerialGetEventHandler(Terminal.WriteToWindow); //serial in goes to terminal
-            Terminal.SendCommandHandler += new OnSendCommandHandler(TextScriptEngine.RunEventDebug); //terminal out goes to TSC
+            //link script interfaces
+            {
+                //link terminal to serial manager
+                SerialManager.EventHandler += new OnSerialGetEventHandler(Terminal.WriteToWindow); //serial in goes to terminal
+                SerialManager.EventHandler += new OnSerialGetEventHandler(ResponseEngine.ParseResponse); //serial in goes to response engine
 
-            TextScriptEngine.SendMessageHandler += new OnWriteOutHandler(Terminal.WriteToWindow); //tsc messages go to terminal
-            TextScriptEngine.SendCommandHandler += new OnWriteOutHandler(SerialManager.SendString); //tsc commands go to terminal + serial
+                ResponseEngine.RunEventHandler += new OnRunEventHandler(TextScriptEngine.PushEvent); //responses goes to TSC queue
+                Terminal.SendCommandHandler += new OnSendCommandHandler(TextScriptEngine.RunEventDebug); //terminal out goes to TSC debug
 
+                TextScriptEngine.SendMessageHandler += new OnWriteOutHandler(Terminal.WriteToWindow); //tsc messages go to terminal
+                TextScriptEngine.SendCommandHandler += new OnWriteOutHandler(SerialManager.SendString); //tsc commands go to serial
+
+            }
 
             //link timer control
             TimerControl.EventHandler += Scoreboard.AddTimeMajor;
@@ -69,6 +77,7 @@ namespace DungeonMaster
 
             //test
             //Scoreboard.StartStopwatch();
+            //ResponseEngine.ParseResponse("");
         }
 
 
