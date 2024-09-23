@@ -36,6 +36,18 @@ enum ResponseType {
     ButtonStatus = 1,
 };
 
+enum ButtonStatusIds {
+    StartMatch = 0,
+    PausePlay = 1,
+    EndMatch = 2,
+    Stopwatch = 3,
+    RedWins = 4,
+    BlueWins = 5,
+    RedReady = 6,
+    BlueReady = 7,
+    ArenaDoor = 8,
+};
+
 ////////RADIO SETTINGS////////
 
 //espnow

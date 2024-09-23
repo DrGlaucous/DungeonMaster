@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Scoreboard.png" />
     <None Remove="Wall-e.png" />
   </ItemGroup>
 
@@ -17,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Scoreboard.png" />
     <Resource Include="Wall-e.png" />
   </ItemGroup>
 

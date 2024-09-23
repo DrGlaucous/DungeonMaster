@@ -12,8 +12,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ScrollViewer>
-            <TextBlock TextWrapping="Wrap" Background="#FF5F5F5F" Foreground="#FF93FF7D" Margin="3,3,3,3"><Run Text="First Line"/><LineBreak/><Run Text="Second Line"/></TextBlock>
+        <ScrollViewer x:Name="ScrollContainer">
+            <TextBlock x:Name="SerialInbox" TextWrapping="Wrap" Background="#FF5F5F5F" Foreground="#FF93FF7D" Margin="0,0,0,0" Text=""/>
         </ScrollViewer>
         <Grid Grid.Row="1" Margin="3,0,3,0">
             <Grid.ColumnDefinitions>
@@ -21,9 +21,9 @@
                 <ColumnDefinition/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Button Content=" Send " HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3,3,3,3"/>
-            <Button Grid.Column="2" Content=" Clear " HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3,3,3,3"/>
-            <TextBox Grid.Column="1" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Margin="3,3,3,3"/>
+            <Button x:Name="SerialSendButton" Content=" Send " HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3,3,3,3" Click="SerialSendButtonClick"/>
+            <Button x:Name="SerialClearButton" Grid.Column="2" Content=" Clear " HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3,3,3,3" Click="SerialClearButtonClick"/>
+            <TextBox x:Name="SerialOutbox" Grid.Column="1" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Margin="3,3,3,3"/>
         </Grid>
     </Grid>
 </UserControl>

@@ -91,6 +91,7 @@ concentrated commands:
 <KEY //PC
 <FRE //PC
 <EVE //PC
+<NOP //PC does nothing, good for terminating stuff
 
 ```
 
@@ -120,6 +121,8 @@ Response packets
 ```
 response packets are in plaintext, to be printed to the terminal window, each part of the response packet is delimited with ":"
 
+Note: the numbers can all be any length
+
 cccc - device type
 cccc - device id
 cccc - response type
@@ -128,18 +131,23 @@ c - \0 - response data
 <cccc:cccc:cccc:data\0
 
 device types:
+0 - dongle
+1 - jc
+2 - box
+
+//scrapped idea: 4 char identifier
 dngl - dongle
-valid responses:
-PacketGetOk //command was gotten successfully
-ButtonStatus //reporting a button state change
-
 judg - judge remote
-valid responses:
-X O //button ID [x] is ON
-X F //button ID [x] is OFF
-Ok //command was gotten successfully
-
 boxx - box
+
+response types:
+0 - PacketGetOk //command was gotten successfully
+1 - ButtonStatus //reporting a button state change
+
+
+with packetGetOk, simply print response and do nothing else (format is not strict)
+
+with button response, this is the format:
 X O //button ID [x] is ON
 X F //button ID [x] is OFF
 Ok //command was gotten successfully
@@ -162,6 +170,7 @@ judg:0003:0007 O
 boxx:0002:0006 F
 boxx:0002:Ok
 
+0:1:1:7 O
 
 ```
 

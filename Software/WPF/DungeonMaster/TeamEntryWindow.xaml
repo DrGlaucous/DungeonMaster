@@ -27,11 +27,11 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Label Content="Bot Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <Button x:Name="BrowseButton" Grid.Column="1" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Width="63"/>
+                <Button x:Name="BrowseButton" Grid.Column="1" Content="Browse" HorizontalAlignment="Center" VerticalAlignment="Center" Width="63" Click="BrowseButtonClick"/>
             </Grid>
-            <Image Grid.Column="2" Grid.Row="1" Width="200" Height="200"/>
-            <TextBox x:Name="BotField" Grid.Column="1" HorizontalAlignment="Center" Grid.Row="1" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Width="120" Margin="3,8,3,0"/>
-            <TextBox x:Name="TeamField" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Name" VerticalAlignment="Center" Width="120" Margin="3,0,3,0"/>
+            <Image x:Name="BotImageWindow" Grid.Column="2" Grid.Row="1" Width="200" Height="200"/>
+            <TextBox x:Name="BotField" Grid.Column="1" HorizontalAlignment="Center" Grid.Row="1" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Width="120" Margin="3,8,3,0" LostFocus="BotFieldLostFocus"/>
+            <TextBox x:Name="TeamField" Grid.Column="1" HorizontalAlignment="Center" TextWrapping="Wrap" Text="Name" VerticalAlignment="Center" Width="120" Margin="3,0,3,0" LostFocus="TeamFieldLostFocus"/>
             <Label Content="Bot Name" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" Margin="0,3,0,0"/>
             <Label Content="Team Name" HorizontalAlignment="Left" VerticalAlignment="Center"/>
             <Border BorderBrush="Black" BorderThickness="1" Grid.Column="2" Grid.Row="1"/>

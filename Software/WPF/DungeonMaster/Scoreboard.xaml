@@ -6,11 +6,14 @@
         xmlns:local="clr-namespace:DungeonMaster"
         mc:Ignorable="d"
         Title="Scoreboard" Height="450" Width="800" Closed="Window_Closed">
+    <Window.Background>
+        <ImageBrush ImageSource="/Scoreboard.png"/>
+    </Window.Background>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="20*"/>
+            <RowDefinition Height="30*"/>
             <RowDefinition Height="50*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="3">
@@ -26,22 +29,22 @@
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <Label Content="Team 1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="28"/>
-                <Label Content="Robot 1" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" FontSize="28"/>
+                <Label x:Name="Team1" Content="Team 1" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="28" Foreground="#FFA5A5A5"/>
+                <Label x:Name="Robot1" Content="Robot 1" HorizontalAlignment="Left" Grid.Row="1" VerticalAlignment="Top" FontSize="28" Foreground="#FFA7A7A7"/>
             </Grid>
             <Grid Grid.Column="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                <Label Content="Team 2" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="28"/>
-                <Label Content="Robot 2" HorizontalAlignment="Right" Grid.Row="1" VerticalAlignment="Top" FontSize="28"/>
+                <Label x:Name="Team2" Content="Team 2" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="28" Foreground="#FFB9B9B9"/>
+                <Label x:Name="Robot2" Content="Robot 2" HorizontalAlignment="Right" Grid.Row="1" VerticalAlignment="Top" FontSize="28" Foreground="#FF9E9E9E"/>
             </Grid>
-            <Image Grid.Column="1"/>
-            <Image Grid.Column="3"/>
+            <Image x:Name="Bot1Pic" Grid.Column="1"/>
+            <Image x:Name="Bot2Pic" Grid.Column="3"/>
         </Grid>
-        <Label Content="00:00:00" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" FontSize="28"/>
-        <Label Content="00:00:00" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="48"/>
+        <Label x:Name="Stopwatch" Content="00:00:00" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" FontSize="28" Foreground="#FF9E9E9E"/>
+        <Label x:Name="TimerMajor" Content="00:00:00" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="48" Background="{x:Null}" Foreground="#FFAFAFAF"/>
 
     </Grid>
 </Window>

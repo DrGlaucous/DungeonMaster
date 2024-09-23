@@ -18,6 +18,7 @@ namespace DungeonMaster
 {
     /// <summary>
     /// Interaction logic for SerialManager.xaml
+    /// Manages all outgoing and incoming serial connections
     /// </summary>
     public partial class SerialManager : UserControl
     {
@@ -87,7 +88,7 @@ namespace DungeonMaster
         }
 
         //send string out to serial port, returns true if send was successful
-        public bool SendString(String data)
+        public void SendString(String data)
         {
 
             if (SerialPort.IsOpen)
@@ -96,13 +97,13 @@ namespace DungeonMaster
                 try
                 {
                     SerialPort.Write(data);
-                    return true;
+                    //return true;
                 }
                 catch { }
             }
 
 
-            return false;
+            //return false;
         }
 
 
