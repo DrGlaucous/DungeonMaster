@@ -16,12 +16,12 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Button Content="Start Match" Background="#FFC3FFC1"/>
-        <Button Grid.Column="1" Content="Stopwatch"/>
-        <Button Content="Pause/Play Timer" Grid.Row="1" Background="#FFFEFFB9"/>
-        <Button Grid.Column="1" Content="Red Wins" Grid.Row="1" Background="#FFFFB1B1"/>
-        <Button Content="End Match" Grid.Row="2" Background="#FFFFB0B0"/>
-        <Button Grid.Column="1" Content="Blue Wins" Grid.Row="2" Background="#FFAFC7FF"/>
+        <Button x:Name="StartMatchButton" Content="Start Match" Background="#FFC3FFC1" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="StopwatchButton" Grid.Column="1" Content="Stopwatch" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="PausePlayButton" Content="Pause/Play Timer" Grid.Row="1" Background="#FFFEFFB9" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="RedWinsButton" Grid.Column="1" Content="Red Wins" Grid.Row="1" Background="#FFFFB1B1" PreviewMouseDown="ButtonClick"  PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="EndMatchButton" Content="End Match" Grid.Row="2" Background="#FFFFB0B0" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="BlueWinsButton" Grid.Column="1" Content="Blue Wins" Grid.Row="2" Background="#FFAFC7FF" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
 
     </Grid>
 </UserControl>

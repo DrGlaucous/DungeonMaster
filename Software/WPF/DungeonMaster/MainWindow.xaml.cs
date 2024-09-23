@@ -66,6 +66,7 @@ namespace DungeonMaster
                 TextScriptEngine.SendMessageHandler += new OnWriteOutHandler(Terminal.WriteToWindow); //tsc messages go to terminal
                 TextScriptEngine.SendCommandHandler += new OnWriteOutHandler(SerialManager.SendString); //tsc commands go to serial
 
+                SimJudgeControls.SendResponseHandler += new JudgeControls.OnSerialGetEventHandler(ResponseEngine.ParseResponse);
             }
 
             //link timer control

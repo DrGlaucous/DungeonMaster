@@ -44,8 +44,8 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <local:JudgeControls Margin="3,0,0,0"/>
-                    <local:BoxControls Grid.Column="1" Margin="3,0,0,0"/>
+                    <local:JudgeControls x:Name="SimJudgeControls" Margin="3,0,0,0"/>
+                    <local:BoxControls x:Name="SimBoxControls" Grid.Column="1" Margin="3,0,0,0"/>
                 </Grid>
 
             </ScrollViewer>

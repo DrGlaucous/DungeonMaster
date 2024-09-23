@@ -630,7 +630,7 @@ namespace DungeonMaster
                         int button_id = Int32.Parse(split_response[0]);
                         bool status = split_response[1][0] == 'O';
 
-                        //run event based on button number + status "on" events are 2000 range, off events are 1000 range
+                        //run event based on button number + status "on" events are 1000 range, "off" events are 2000 range
                         int event_num = 1000 * (status? 1 : 2) + button_id;
                         RunEventHandler?.Invoke(event_num);
 
