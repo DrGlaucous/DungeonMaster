@@ -54,6 +54,16 @@ namespace DungeonMaster
         delegate void VoidMethodInvoker();
 
 
+        public enum ScoreboardAction
+        {
+            StartMain, //start main countdown
+            StopMain, //stop main countdown
+            StartStopwatch, //start stopwatch countup
+            StopStopwatch, //stop stopwatch countup
+            ResetStopwatch, //reset stopwatch to 0
+            AddTimeMsMain, //add more time to main timer
+        }
+
         public Scoreboard()
         {
             InitializeComponent();
@@ -207,6 +217,54 @@ namespace DungeonMaster
         }
 
 
+        //wraps the methods above into a single method that can be invoked from the TSC engine
+        public void RunTscAction(ScoreboardAction action, int arg1)
+        {
+            //StartMain, //start main countdown
+            //StopMain, //stop main countdown
+            //StartStopwatch, //start stopwatch countup
+            //StopStopwatch, //stop stopwatch countup
+            //ResetStopwatch, //reset stopwatch to 0
+            //AddTimeMsMain, //add more time to main timer
+
+            switch (action)
+            {
+                default: { break; }
+                case ScoreboardAction.StartMain:
+                    {
+                        StartTimerMajor();
+                        break;
+                    }
+                case ScoreboardAction.StopMain:
+                    {
+                        StopTimerMajor();
+                        break;
+                    }
+                case ScoreboardAction.StartStopwatch:
+                    {
+                        StartStopwatch();
+                        break;
+                    }
+                case ScoreboardAction.StopStopwatch:
+                    {
+                        StopStopwatch();
+                        break;
+                    }
+                case ScoreboardAction.ResetStopwatch:
+                    {
+                        ResetStopwatch();
+                        break;
+                    }
+                case ScoreboardAction.AddTimeMsMain:
+                    {
+                        var tspan = TimeSpan.FromMilliseconds(arg1);
+                        AddTimeMajor(tspan);
+                        break;
+                    }
+            }
+        
+        }
+
 
         //load video and play it over the scoreboard (stretched to width/height)
         public void ShowVideo(String video_path)
@@ -217,6 +275,9 @@ namespace DungeonMaster
         }
 
 
+
+
+        //pass refrences to teamname and image data so they'll be updated with the settings
         public void BindData(TeamEntryData red_data, TeamEntryData blue_data)
         {
 
@@ -229,7 +290,6 @@ namespace DungeonMaster
             this.team_1_data.ImgEventHandler += OnImageUpdate;
             this.team_2_data.ImgEventHandler += OnImageUpdate;
         }
-
 
         //invoked whenever text fields of the bound data change
         private void OnTextUpdate()

@@ -28,7 +28,7 @@ namespace DungeonMaster
         public string OPCode = String.Empty;
         public List<string> arguments = [];
 
-        //returns the number of args exepcted from the opcode
+        //returns the number of args exepcted from the opcode (currently unused)
         public static bool GetArgCount(string opcode, out int int_arg_ct, out int str_arg_ct)
         {
             switch (opcode) {
@@ -177,6 +177,9 @@ namespace DungeonMaster
         public event OnWriteOutHandler? SendCommandHandler; //sends output to terminal + over serial
         public event OnWriteOutHandler? SendMessageHandler; //sends output to terminal only (for viewer messages)
 
+        //used to send new commands to the scoreboard
+        public delegate void OnScoreboardControlHandler(Scoreboard.ScoreboardAction action, int arg1);
+        public event OnScoreboardControlHandler? ScoreboardControlHandler;
 
         //holds bit flags, valid range is between 0000 and 7999
         private byte[] flag_arr = new byte[1000];
@@ -522,6 +525,33 @@ namespace DungeonMaster
                                         ClearFlags();
                                         break;
                                     }
+                                case "SWG": //StopWatch Go
+                                    {
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StartStopwatch, 0);
+                                        break;
+                                    }
+                                case "SWH": //StopWatch Halt
+                                    {
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StopStopwatch, 0);
+                                        break;
+                                    }
+                                case "SWR": //StopWatch Reset
+                                    {
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.ResetStopwatch, 0);
+                                        break;
+                                    }
+                                case "TIG": //TImer Go
+                                    {
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StartMain, 0);
+                                        break;
+                                    }
+                                case "TIH": //TImer Halt
+                                    {
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StopMain, 0);
+                                        break;
+                                    }
+
+
                             }
 
                             //stop running this event if we've entered "seeking" mode
