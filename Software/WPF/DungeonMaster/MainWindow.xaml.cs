@@ -14,6 +14,11 @@ using static DungeonMaster.SerialManager;
 using static DungeonMaster.Terminal;
 using static DungeonMaster.TSCEngine;
 
+
+using System.IO;
+using System.Reflection;
+
+
 namespace DungeonMaster
 {
     /// <summary>
@@ -82,14 +87,41 @@ namespace DungeonMaster
             //Scoreboard.StartStopwatch();
             //ResponseEngine.ParseResponse("");
 
-            var resources = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames(); ;
+            var resources = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames();
+
+            var uri = new Uri("pack://application:,,,/Scoreboard.png");
+            var uri2 = new Uri("pack://application:,,,/ShaderSource/ColorKeyAlpha.ps");
+            //var testimg = new BitmapImage(uri);
+
+            var uri3 = MakePackUri("ShaderSource/ColorKeyAlpha.ps");
+
+            var resourceInfo = Application.GetResourceStream(uri3);
 
 
             var pixelShader = new PixelShader();
-            pixelShader.UriSource = new Uri("./ShaderSource/ColorKeyAlpha.ps");
+            pixelShader.UriSource = uri3;
 
 
         }
+
+
+        public static Uri MakePackUri(string relativeFile)
+        {
+            Assembly a = typeof(MainWindow).Assembly;
+
+            // Extract the short name.
+            string assemblyShortName = a.ToString().Split(',')[0];
+
+            string uriString = "pack://application:,,,/" +
+                assemblyShortName +
+                ";component/" +
+                relativeFile;
+
+            return new Uri(uriString);
+        }
+
+
+
 
 
         //close everything with this window
