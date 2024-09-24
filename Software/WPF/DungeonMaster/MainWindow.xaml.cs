@@ -5,6 +5,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -57,8 +58,8 @@ namespace DungeonMaster
             //link script interfaces
             {
                 //link terminal to serial manager
-                SerialManager.EventHandler += new OnSerialGetEventHandler(Terminal.WriteToWindow); //serial in goes to terminal
-                SerialManager.EventHandler += new OnSerialGetEventHandler(ResponseEngine.ParseResponse); //serial in goes to response engine
+                SerialManager.DataGetEventHandler += new OnSerialGetEventHandler(Terminal.WriteToWindow); //serial in goes to terminal
+                SerialManager.DataGetEventHandler += new OnSerialGetEventHandler(ResponseEngine.ParseResponse); //serial in goes to response engine
 
                 ResponseEngine.RunEventHandler += new OnRunEventHandler(TextScriptEngine.PushEvent); //responses goes to TSC queue
                 Terminal.SendCommandHandler += new OnSendCommandHandler(TextScriptEngine.RunEventDebug); //terminal out goes to TSC debug
@@ -67,6 +68,7 @@ namespace DungeonMaster
                 TextScriptEngine.SendCommandHandler += new OnWriteOutHandler(SerialManager.SendString); //tsc commands go to serial
 
                 SimJudgeControls.SendResponseHandler += new JudgeControls.OnSerialGetEventHandler(ResponseEngine.ParseResponse);
+                SimBoxControls.SendResponseHandler += new BoxControls.OnSerialGetEventHandler(ResponseEngine.ParseResponse);
             }
 
             //link timer control
@@ -79,6 +81,14 @@ namespace DungeonMaster
             //test
             //Scoreboard.StartStopwatch();
             //ResponseEngine.ParseResponse("");
+
+            var resources = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames(); ;
+
+
+            var pixelShader = new PixelShader();
+            pixelShader.UriSource = new Uri("./ShaderSource/ColorKeyAlpha.ps");
+
+
         }
 
 

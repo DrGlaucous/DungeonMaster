@@ -177,6 +177,11 @@ namespace DungeonMaster
         public event OnWriteOutHandler? SendCommandHandler; //sends output to terminal + over serial
         public event OnWriteOutHandler? SendMessageHandler; //sends output to terminal only (for viewer messages)
 
+
+        //holds bit flags, valid range is between 0000 and 7999
+        private byte[] flag_arr = new byte[1000];
+
+
         //constructor
         public TSCEngine()
         {
@@ -324,7 +329,11 @@ namespace DungeonMaster
         { 
             state = EngineState.Running;
             while (state == EngineState.Running)
-            {  
+            {
+                //catch unloaded events
+                if (event_list.Count == 0) {
+                    state = EngineState.Idle;
+                }
                 for (int i = event_start_index; i < event_list.Count; ++i)
                 {
                     //event matches, run it
@@ -453,10 +462,67 @@ namespace DungeonMaster
                                         state = EngineState.Idle;
                                         break;
                                     }
+                                case "FL+": //FL+ xxxx, sets flag xxxx to 1
+                                    {
+                                        try
+                                        {
+                                            var flag_no = GetNumberFromString(command.arguments[0]);
+                                            SetFlag(flag_no, true);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "FL-":  //FL- xxxx, sets flag xxxx to 0
+                                    {
+                                        try
+                                        {
+                                            var flag_no = GetNumberFromString(command.arguments[0]);
+                                            SetFlag(flag_no, false);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "FLJ": //FLJxxxx:yyyy, jumps to yyyy if flag xxxx is true
+                                    {
+                                        try
+                                        {
+                                            var flag_no = GetNumberFromString(command.arguments[0]);
 
+                                            if (GetFlag(flag_no)) {
+                                                event_no = GetNumberFromString(command.arguments[1]);
+                                                command_start_index = 0;
+                                                event_start_index = 0;
+                                                seeking = true;
+                                            }
+                                        }
+                                        catch { }
+
+                                        break;
+                                    }
+                                case "FNJ": //FNJxxxx:yyyy, jumps to yyyy if flag xxxx is false
+                                    {
+                                        try
+                                        {
+                                            var flag_no = GetNumberFromString(command.arguments[0]);
+
+                                            if (!GetFlag(flag_no))
+                                            {
+                                                event_no = GetNumberFromString(command.arguments[1]);
+                                                command_start_index = 0;
+                                                event_start_index = 0;
+                                                seeking = true;
+                                            }
+                                        }
+                                        catch { }
+
+                                        break;
+                                    }
+                                case "FLC": //resets all flags to state "0"
+                                    {
+                                        ClearFlags();
+                                        break;
+                                    }
                             }
-
-
 
                             //stop running this event if we've entered "seeking" mode
                             if (seeking)
@@ -568,7 +634,49 @@ namespace DungeonMaster
             DrainEvents();
 
         }
-    
+
+        private bool SetFlag(int flag_no, bool state)
+        {
+            int slot_no = flag_no / (sizeof(byte) * 8);
+            int shift_no = flag_no % (sizeof(byte) * 8);
+
+            //OOB protection
+            if (flag_no < 0 || slot_no >= flag_arr.Length)
+                return false;
+
+            if (state)
+            {
+                flag_arr[slot_no] |= (byte)(1 << shift_no); //set
+            }
+            else
+            {
+                flag_arr[slot_no] &= (byte)~(1 << shift_no); //unset
+            }
+
+
+            return true;
+        }
+
+        private bool GetFlag(int flag_no)
+        {
+            int slot_no = flag_no / (sizeof(byte) * 8);
+            int shift_no = flag_no % (sizeof(byte) * 8);
+
+            //OOB protection
+            if (flag_no < 0 || slot_no >= flag_arr.Length)
+                return false;
+
+            return (flag_arr[slot_no] & (byte)(1 << shift_no)) > 0;
+        }
+
+        private void ClearFlags()
+        {
+            //we don't have memset in c#, so we do this instead
+            for(int i = 0; i < flag_arr.Length; ++i)
+            {
+                flag_arr[i] = 0;
+            }
+        }
     
     }
 
@@ -605,39 +713,46 @@ namespace DungeonMaster
         //currently parses one input at a time
         public void ParseResponse(string input)
         {
-            //test
-            //input = "<1:13:1:12 O\n";
-
-            string[] split_strings = Regex.Split(input, "[<:]");
-
-            //all responses should have 4 parts (+1 for anything that comes before the '<')
-            if (split_strings.Length < 5)
+            try
             {
-                return;
+                //test
+                //input = "<1:13:1:12 O\n";
+
+                string[] split_strings = Regex.Split(input, "[<:]");
+
+                //all responses should have 4 parts (+1 for anything that comes before the '<')
+                if (split_strings.Length < 5)
+                {
+                    return;
+                }
+
+                DeviceType device_type = (DeviceType)Int32.Parse(split_strings[1]);
+                int device_id = Int32.Parse(split_strings[2]);
+                ResponseType response_type = (ResponseType)Int32.Parse(split_strings[3]);
+                string response_data = split_strings[4];
+
+                switch (response_type)
+                {
+                    default: { break; }
+                    case ResponseType.ButtonStatus:
+                        {
+                            string[] split_response = Regex.Split(response_data, " ");
+                            int button_id = Int32.Parse(split_response[0]);
+                            bool status = split_response[1][0] == 'O';
+
+                            //run event based on button number + status "on" events are 1000 range, "off" events are 2000 range
+                            int event_num = 1000 * (status ? 1 : 2) + button_id;
+                            RunEventHandler?.Invoke(event_num);
+
+                            break;
+                        }
+                }
+
             }
-
-            DeviceType device_type = (DeviceType)Int32.Parse(split_strings[1]);
-            int device_id = Int32.Parse(split_strings[2]);
-            ResponseType response_type = (ResponseType)Int32.Parse(split_strings[3]);
-            string response_data = split_strings[4];
-
-            switch (response_type)
+            catch
             {
-                default: { break; }
-                case ResponseType.ButtonStatus:
-                    {
-                        string[] split_response = Regex.Split(response_data, " ");
-                        int button_id = Int32.Parse(split_response[0]);
-                        bool status = split_response[1][0] == 'O';
-
-                        //run event based on button number + status "on" events are 1000 range, "off" events are 2000 range
-                        int event_num = 1000 * (status? 1 : 2) + button_id;
-                        RunEventHandler?.Invoke(event_num);
-
-                        break;
-                    }
+                //do nothing if we get garbage data in (sometimes happens when we connect to a device)
             }
-
         }
     }
 

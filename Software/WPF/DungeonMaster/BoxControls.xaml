@@ -11,8 +11,8 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <Button Content="Red Ready" Background="#FFFDA4A4"/>
-        <Button Grid.Column="1" Content="Blue Ready" Background="#FF9EADFF"/>
+        <Button x:Name="RedReadyButton" Content="Red Ready" Background="#FFFDA4A4" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="BlueReadyButton" Grid.Column="1" Content="Blue Ready" Background="#FF9EADFF" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
 
     </Grid>
 </UserControl>
