@@ -550,8 +550,42 @@ namespace DungeonMaster
                                         ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StopMain, 0);
                                         break;
                                     }
-
-
+                                case "TIA": //TImer Add <TIAxxxx:yyyy add xxxx minutes and yyyy seconds to the current time 
+                                    {
+                                        try
+                                        {
+                                            int mins = GetNumberFromString(command.arguments[0]);
+                                            int secs = GetNumberFromString(command.arguments[0]);
+                                            int total = (mins * 60 + secs) * 1000;
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMsMain, total);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "TIS": //TImer Sub <TISxxxx:yyyy subtract xxxx minutes and yyyy seconds from the current time 
+                                    {
+                                        try
+                                        {
+                                            int mins = GetNumberFromString(command.arguments[0]);
+                                            int secs = GetNumberFromString(command.arguments[0]);
+                                            int total = (mins * 60 + secs) * -1000;
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMsMain, total);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "TEU": //Timer Event pUsh <TEUxxxx:yyyy:zzzz set event xxxx to be run when the timer hits yyyy minutes, zzzz seconds
+                                    {
+                                        break;
+                                    }
+                                case "TEO": //Timer Event pOp <TEOxxxx removes event xxxx from the list of events to execute
+                                    {
+                                        break;
+                                    }
+                                case "TEC": //Timer Event Clear <TEC removes all events from the list of events to execute
+                                    {
+                                        break;
+                                    }
                             }
 
                             //stop running this event if we've entered "seeking" mode

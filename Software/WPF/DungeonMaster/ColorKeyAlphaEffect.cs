@@ -22,7 +22,7 @@ namespace DungeonMaster
         private static PixelShader pixelShader;
 
 
-        //Creates an instance of the shader from the included pixel shader.
+        //Creates an instance of the shader from the included pixel shader. (.ps is the compiled file)
         static ColorKeyAlphaEffect()
         {
             pixelShader = new PixelShader();
