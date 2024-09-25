@@ -18,9 +18,14 @@ float4 main(float2 uv : TEXCOORD) : COLOR
 {
    float4 color = tex2D( implicitInputSampler, uv );
    
-   if( color.r + color.g + color.b < 0.3 ) {
-      color.rgba = 0;
-   }
-   
-   return color;
+   //if( color.r + color.g + color.b < 0.3 ) {
+   //   color.rgba = 0;
+   //}
+    
+    if (color.r < 0.3 && color.g > 0.5 && color.b < 0.3)
+    {
+        color.rgba = 0;
+    }
+    
+    return color;
 }

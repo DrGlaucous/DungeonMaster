@@ -30,13 +30,18 @@ namespace DungeonMaster
             ColorKeyAlphaEffect effect = new ColorKeyAlphaEffect();
             Brush brush = Effect.ImplicitInput;
             effect.Input = brush;
-            
-            TestMediaElement.Effect = effect;
 
-            //TestMediaElement
+            TestMediaElement.Effect = effect;
+            
+            TestMediaElement.LoadedBehavior = MediaState.Manual;
+            TestMediaElement.Source = new Uri("C:\\Users\\EdwardStuckey\\Documents\\GitHub\\DungeonMaster\\Software\\Tests\\Images\\Sauce.mp4");
+            //TestMediaElement.Play();
         }
 
-
-
+        private void Bttn_Click(object sender, RoutedEventArgs e)
+        {
+            TestPlayVideo();
+            TestMediaElement.Play();
+        }
     }
 }

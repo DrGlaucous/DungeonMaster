@@ -29,6 +29,7 @@ namespace DungeonMaster
         private TSCEngine TextScriptEngine = new();
         private ResponseEngine ResponseEngine = new();
         private Scoreboard Scoreboard = new();
+        private StreamOverlay StreamOverlay = new();
 
         //team data (names, bot images)
         public TeamEntryData TeamRedData = new();
@@ -43,6 +44,9 @@ namespace DungeonMaster
             //if scoreboard doesn't exist, make it and show it
             Scoreboard ??= new Scoreboard();
             Scoreboard.Show();
+
+            StreamOverlay ??= new StreamOverlay();
+            StreamOverlay.Show();
 
             //set and bind team sub-windows
             {
