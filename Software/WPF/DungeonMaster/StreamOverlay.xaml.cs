@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,8 +35,15 @@ namespace DungeonMaster
             TestMediaElement.Effect = effect;
             
             TestMediaElement.LoadedBehavior = MediaState.Manual;
-            TestMediaElement.Source = new Uri("C:\\Users\\EdwardStuckey\\Documents\\GitHub\\DungeonMaster\\Software\\Tests\\Images\\Sauce.mp4");
+
+            //make absolute path from relative one
+            var path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Sauce.mp4");
+            var ueri = new Uri(path);
+
+            TestMediaElement.Source = ueri;
             //TestMediaElement.Play();
+            
+
         }
 
         private void Bttn_Click(object sender, RoutedEventArgs e)
