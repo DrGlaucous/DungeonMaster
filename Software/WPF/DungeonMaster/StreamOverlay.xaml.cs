@@ -33,7 +33,6 @@ namespace DungeonMaster
             effect.Input = brush;
 
             TestMediaElement.Effect = effect;
-            
             TestMediaElement.LoadedBehavior = MediaState.Manual;
 
             //make absolute path from relative one
@@ -51,5 +50,13 @@ namespace DungeonMaster
             TestPlayVideo();
             TestMediaElement.Play();
         }
+
+        //close everything with this window
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+
     }
 }

@@ -11,6 +11,7 @@ using Microsoft.VisualBasic;
 using System.IO;
 using System.Reflection;
 using System.Windows.Input;
+using System.Windows.Shapes;
 
 
 namespace DungeonMaster
@@ -178,7 +179,7 @@ namespace DungeonMaster
         public event OnWriteOutHandler? SendMessageHandler; //sends output to terminal only (for viewer messages)
 
         //used to send new commands to the scoreboard
-        public delegate void OnScoreboardControlHandler(Scoreboard.ScoreboardAction action, int arg1);
+        public delegate void OnScoreboardControlHandler(Scoreboard.ScoreboardAction action, params object[] list);
         public event OnScoreboardControlHandler? ScoreboardControlHandler;
 
         //holds bit flags, valid range is between 0000 and 7999
@@ -527,27 +528,27 @@ namespace DungeonMaster
                                     }
                                 case "SWG": //StopWatch Go
                                     {
-                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StartStopwatch, 0);
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StartStopwatch);
                                         break;
                                     }
                                 case "SWH": //StopWatch Halt
                                     {
-                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StopStopwatch, 0);
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StopStopwatch);
                                         break;
                                     }
                                 case "SWR": //StopWatch Reset
                                     {
-                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.ResetStopwatch, 0);
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.ResetStopwatch);
                                         break;
                                     }
                                 case "TIG": //TImer Go
                                     {
-                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StartMain, 0);
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StartMain);
                                         break;
                                     }
                                 case "TIH": //TImer Halt
                                     {
-                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StopMain, 0);
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StopMain);
                                         break;
                                     }
                                 case "TIA": //TImer Add <TIAxxxx:yyyy add xxxx minutes and yyyy seconds to the current time 
@@ -584,6 +585,53 @@ namespace DungeonMaster
                                     }
                                 case "TEC": //Timer Event Clear <TEC removes all events from the list of events to execute
                                     {
+                                        break;
+                                    }
+                                case "AVS": //Audio Video Start, <AVSxxxx:string_arg$ plays an audio clip or video clip on media buffer xxxx [0 or 1]
+                                    {
+                                        try
+                                        {
+                                            var player_idx = GetNumberFromString(command.arguments[0]);
+                                            string path = Regex.Split(command.arguments[1], "\\$")[0]; //trim potential '$' delimiter from the string arg
+
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.PlayMedia, path, player_idx);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "AVP": //Audio Video Pause, <AVPxxxx, pauses AV playback on media buffer xxxx [0 or 1]
+                                    {
+                                        try
+                                        {
+                                            var player_idx = GetNumberFromString(command.arguments[0]);
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StopMedia, player_idx);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "AVH": //Audio Video Hide, <AVSxxxx, stops the AV playback on media buffer xxxx [0 or 1] 
+                                    {
+                                        try
+                                        {
+                                            var player_idx = GetNumberFromString(command.arguments[0]);
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StopMedia, player_idx);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "IMS": //IMage Show: <IMSpath_to_image$, loads the image from this path onto the screen
+                                    {
+                                        try
+                                        {
+                                            string path = Regex.Split(command.arguments[0], "\\$")[0]; //trim potential '$' delimiter from the string arg
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.ShowImage, path);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "IMH": //IMage Hide: <IMH, hides the overlay image
+                                    {
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.HideImage);
                                         break;
                                     }
                             }

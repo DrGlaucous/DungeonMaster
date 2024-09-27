@@ -5,16 +5,13 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DungeonMaster"
         mc:Ignorable="d"
-        Title="StreamOverlay" Height="450" Width="800">
+        Title="StreamOverlay" Height="128" Width="1024" Closed="Window_Closed">
     <Grid>
         <Grid.Background>
-            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                <GradientStop Color="Black"/>
-                <GradientStop Color="White" Offset="1"/>
-            </LinearGradientBrush>
+            <ImageBrush ImageSource="/StreamOverlay2.png"/>
         </Grid.Background>
-        <MediaElement x:Name="TestMediaElement" HorizontalAlignment="Left" Height="279" Margin="42,27,0,0" VerticalAlignment="Top" Width="521"/>
-        <Button x:Name="Bttn" Content="Button" HorizontalAlignment="Left" Margin="659,354,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.777,-7.592" Click="Bttn_Click"/>
+        <MediaElement x:Name="TestMediaElement" HorizontalAlignment="Left" Height="108" Margin="10,71,0,0" VerticalAlignment="Top" Width="247"/>
+        <Button x:Name="Bttn" Content="Button" HorizontalAlignment="Left" Margin="10,210,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.777,-7.592" Click="Bttn_Click"/>
 
     </Grid>
 </Window>

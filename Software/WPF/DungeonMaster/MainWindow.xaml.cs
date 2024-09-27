@@ -82,9 +82,9 @@ namespace DungeonMaster
 
             //link timer control
             TimerControl.EventHandler += Scoreboard.AddTimeMajor;
-            Scoreboard.TimeUpdateHandler += TimerControl.UpdateTimeDisplay;
+            Scoreboard.TimeUpdateHandler += TimerControl.UpdateTimeDisplay; //links the little clock on the main window to the scoreboard's clock
 
-            TextScriptEngine.ScoreboardControlHandler += Scoreboard.RunTscAction; //bind TSC to scoreboard control
+            TextScriptEngine.ScoreboardControlHandler += Scoreboard.RunAction; //bind TSC to scoreboard control
             TextScriptEngine.LoadScript("./Script.tsc.txt");
 
             //test

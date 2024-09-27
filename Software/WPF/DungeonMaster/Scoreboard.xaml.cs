@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -13,6 +14,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -62,6 +64,10 @@ namespace DungeonMaster
             StopStopwatch, //stop stopwatch countup
             ResetStopwatch, //reset stopwatch to 0
             AddTimeMsMain, //add more time to main timer
+            ShowImage, //overlays a static image onscreen
+            HideImage, //hides the overlayed image
+            PlayMedia, //loads a color keyed video or audio from a local directory (on index 0 or 1)
+            StopMedia, //stops playing video (normally plays 1x and halts on last frame)
         }
 
         public Scoreboard()
@@ -78,6 +84,17 @@ namespace DungeonMaster
             timer_minor.AutoReset = true;
             timer_minor.Enabled = true;
             timer_minor.Stop();
+
+            //set up AV players and add color key
+            ColorKeyAlphaEffect effect = new();
+            Brush brush = Effect.ImplicitInput;
+            effect.Input = brush;
+            MediaBuf1.Effect = effect;
+            MediaBuf1.LoadedBehavior = MediaState.Manual;
+
+            MediaBuf2.Effect = effect;
+            MediaBuf2.LoadedBehavior = MediaState.Manual;
+
 
         }
 
@@ -103,6 +120,7 @@ namespace DungeonMaster
         //starts counting down the main timer
         public void StartTimerMajor()
         {
+            last_trigger_time_major = DateTime.Now; //reset delta-time to zero
             timer_major.Start();
         }
 
@@ -174,6 +192,7 @@ namespace DungeonMaster
         //starts counting up the stopwatch
         public void StartStopwatch()
         {
+            last_trigger_time_minor = DateTime.Now; //reset delta-time to zero
             timer_minor.Start();
         }
 
@@ -217,16 +236,48 @@ namespace DungeonMaster
         }
 
 
-        //wraps the methods above into a single method that can be invoked from the TSC engine
-        public void RunTscAction(ScoreboardAction action, int arg1)
+        //load video and play it over the scoreboard (stretched to width/height)
+        //path should be a local directory without the leading "./".
+        private bool LoadAVMedia(String path, int index)
         {
-            //StartMain, //start main countdown
-            //StopMain, //stop main countdown
-            //StartStopwatch, //start stopwatch countup
-            //StopStopwatch, //stop stopwatch countup
-            //ResetStopwatch, //reset stopwatch to 0
-            //AddTimeMsMain, //add more time to main timer
+            
+            try
+            {
+                //make absolute path from relative one
+                var abspath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), path);
+                var ueri = new Uri(abspath);
 
+                if (index == 0)
+                {
+                    MediaBuf1.Source = ueri;
+                    MediaBuf1.Play();
+                }
+                else
+                {
+                    MediaBuf2.Source = ueri;
+                    MediaBuf2.Play();
+                }
+            }
+            catch { return false; }
+
+            return false;
+        }
+        private bool LoadImage(String path)
+        {
+            try
+            {
+                //make absolute path from relative one
+                var abspath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), path);
+                ImageOverlay.Source = new BitmapImage(new Uri(abspath));
+            }
+            catch { }
+            return false;
+        }
+
+
+        //wraps the methods above into a single method that can be invoked from the TSC engine
+        public void RunAction(ScoreboardAction action, params object[] list)
+        {
             switch (action)
             {
                 default: { break; }
@@ -257,20 +308,57 @@ namespace DungeonMaster
                     }
                 case ScoreboardAction.AddTimeMsMain:
                     {
-                        var tspan = TimeSpan.FromMilliseconds(arg1);
-                        AddTimeMajor(tspan);
+                        try
+                        {
+                            int arg1 = (int)list[0];
+                            var tspan = TimeSpan.FromMilliseconds(arg1);
+                            AddTimeMajor(tspan);
+                        }
+                        catch { }
                         break;
                     }
+                case ScoreboardAction.ShowImage:
+                    {
+                        try
+                        {
+                            string arg1 = (string)list[0];
+                            LoadImage(arg1);
+                        }
+                        catch { }
+                        break;
+                    }
+                case ScoreboardAction.HideImage:
+                    {
+                        ImageOverlay.Source = new BitmapImage();
+                        break;
+                    }
+                case ScoreboardAction.PlayMedia:
+                    {
+                        try
+                        {
+                            string arg1 = (string)list[0];
+                            int arg2 = (int)list[1];
+                            LoadAVMedia(arg1, arg2);
+                        }
+                        catch { }
+                        break;
+                    }
+                case ScoreboardAction.StopMedia:
+                    {
+                        int arg1 = (int)list[0];
+                        if (arg1 == 0)
+                        {
+                            MediaBuf1.Stop();
+                        }
+                        else
+                        {
+                            MediaBuf2.Stop();
+                        }
+
+                        break;
+                    }
+
             }
-        
-        }
-
-
-        //load video and play it over the scoreboard (stretched to width/height)
-        public void ShowVideo(String video_path)
-        {
-
-
 
         }
 
