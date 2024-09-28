@@ -52,6 +52,10 @@ namespace DungeonMaster
         private TeamEntryData team_1_data = new();
         private TeamEntryData team_2_data = new();
 
+        //keep the current state of the mediabuffer playback
+        private bool MediaBuf1IsPaused = true;
+        private bool MediaBuf2IsPaused = true;
+
         delegate void TimespanMethodInvoker(TimeSpan time);
         delegate void VoidMethodInvoker();
 
@@ -67,6 +71,7 @@ namespace DungeonMaster
             ShowImage, //overlays a static image onscreen
             HideImage, //hides the overlayed image
             PlayMedia, //loads a color keyed video or audio from a local directory (on index 0 or 1)
+            PauseMedia, //pauses/plays the currently loaded video (toggle-type)
             StopMedia, //stops playing video (normally plays 1x and halts on last frame)
         }
 
@@ -343,16 +348,50 @@ namespace DungeonMaster
                         catch { }
                         break;
                     }
+                case ScoreboardAction.PauseMedia:
+                    {
+                        int arg1 = (int)list[0];
+                        if (arg1 == 0)
+                        {
+                            //don't toggle pause/play if the window is hidden
+                            if (MediaBuf1.Visibility == Visibility.Hidden)
+                                break;
+
+                            if (MediaBuf1IsPaused)
+                            {
+                                MediaBuf1IsPaused = false;
+                                MediaBuf1.Play();
+                            }
+                            else {
+                                MediaBuf1IsPaused = true;
+                                MediaBuf1.Pause(); //pause without resetting
+                            }
+                            
+                            
+                        }
+                        else
+                        {
+                            if (MediaBuf2.Visibility == Visibility.Hidden)
+                                break;
+
+
+                            MediaBuf2.Pause();
+                        }
+
+                        break;
+                    }
                 case ScoreboardAction.StopMedia:
                     {
                         int arg1 = (int)list[0];
                         if (arg1 == 0)
                         {
-                            MediaBuf1.Stop();
+                            MediaBuf1.Stop(); //reset to beginning
+                            MediaBuf1.Visibility = Visibility.Hidden;
                         }
                         else
                         {
                             MediaBuf2.Stop();
+                            MediaBuf2.Visibility = Visibility.Hidden;
                         }
 
                         break;
