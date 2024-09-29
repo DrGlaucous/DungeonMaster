@@ -1,17 +1,53 @@
+![Dungeon Master](./Resources/AppIcon.png)
 # Dungeon Master
 
-This repo contains the software and hardware needed to control a simple fighting robot arena, or "Battle box".
 
+This repo contains the software and firmware needed to control a fighting robot arena, or "Battle box" with a desktop computer and several ESP32s.
+
+This is not a single program, rather it is a combination of software and hardware features that work together to provide unified control of arena scoreboard, lights, hazards, and streaming overlay in a uniform and dynamic manner.
+
+These are the program parts:
+- **Box controller:** An ESP32 that manages the lights, hazards, and team input on the box itself.
+- **Judge controller:** An ESP32 that manages the judge or referee's input. This is simply a pad with several buttons on it, but these can be configured to do things like start/pause/stop the match, start a KO or pin timer, or various other things.
+- **PC dongle:** An ESP32 that serves as the interface between the wireless controllers and the box itself. While the controllers all support wifi and bluetooth and could technically connect to the computer directly, this method is far easier and more robust, and makes the task simply plug-and-play.
+- **Management software:** A desktop application that gets the inputs from the box controller and judge controller and runs the appropriate functions based on previous input. This program has a control window as well as two "Scoreboard" windows that are designed to be put on streaming software or on a large TV/Projector for in-house spectators. These windows display the match timer, team names+bot pictures, and can also play color-keyed overlay videos, audio, and images for things like countdown timers and KO announcements.
+
+Most of this application is, for lack of a better term, "Glue Logic" that brings all these elements together under a single interface. How the buttons, scoreboard, lights, and other elements behave is completely customizable without the need to recompile the desktop software or re-flash the interface boards. Everything is controlled through a simple and versatile scripting language called "TSC", or Text Script. More info can be found on the [documentation page in the "Resources"](./Resources/Documentation.md) folder.
+
+---
 Planned features:
 - [ ] lighting control
-- [ ] "start" buttons for each team
-- [ ] wireless "judge" station
-- [ ] stream overlays
-- [ ] scoreboard
+- [x] "start" buttons for each team
+- [x] wireless "judge" station
+- [x] stream overlays
+- [x] scoreboard
 
+
+---
+## Repo layout
+
+- `Firmware` - Contains the source files that are loaded on the ESP32 peripherals.
+  - `Common` - Shared libraries between all sub-projects. This contains things like the radio interface for wireless communication and constants+configuration definitions.
+  - `Box` - The firmware for the battlebox itself
+  - `Dongle` - The firmware for the computer interface
+  - `Test` - Test projects used to develop components for the main firmware(s)
+- `Software` - Contains the program that runs on the management computer. The program was written in C# using "WPF" *(sorry, non-windows users!)*.
+  - `WPF` - The C# project folder for the application
+  - `Depricated` - Old stuff that is no longer being developed and maintained
+  - `Tests` - See: `Test`
+- `Resources` - Documentation, images, and other helper files are in here.
+- `Notes` - Notes I took when writing this program and figuring out how it should work.
+
+---
+
+## Documentation
+[Please see the documentation page](./Resources/Documentation.md)
+
+
+---
 
 <details>
-<summary style="font-size:80%;"><i><b>Notes for me</b></i></summary>
+<summary style="font-size:80%;"><i><b>Other notes for me</b></i></summary>
 
 
 lighting control should be modular.
