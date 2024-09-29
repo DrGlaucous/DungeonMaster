@@ -22,10 +22,10 @@ namespace DungeonMaster
     public partial class TimerControl : UserControl
     {
 
+        public event ScoreboardActionDelegate? ScoreboardControlHandler;// { add { handler += value; } remove { handler -= value } }
 
-        public delegate void OnTimeAddHandler(TimeSpan delta_time); //(object sender, OnSerialGetEventHandler e)
-        public event OnTimeAddHandler? EventHandler;// { add { handler += value; } remove { handler -= value } }
-
+        //this is a bit of a hack since we want to zero the clock but can only adjust delta time, so we need to know what was on there already
+        private TimeSpan LastUpdateTime = TimeSpan.Zero;
 
         public TimerControl()
         {
@@ -38,13 +38,25 @@ namespace DungeonMaster
             int seconds = SecondSelector.Number;
 
             var delta_time = TimeSpan.FromSeconds(minutes * 60 + seconds);
-            EventHandler?.Invoke(delta_time);
+            
+            
+            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMain, delta_time);
 
         }
 
 
         public void UpdateTimeDisplay(TimeSpan time) {
-            int minutes = time.Minutes;
+
+            //update hande from outside threads
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new TimespanDelegate(UpdateTimeDisplay), args: time);
+                return;
+            }
+
+            LastUpdateTime = time;
+
+            int minutes = (int)(time.TotalMinutes);
             int seconds = time.Seconds;
             int centiseconds = time.Milliseconds / 10;
 
@@ -52,5 +64,10 @@ namespace DungeonMaster
 
         }
 
+        private void ClearButtonClick(object sender, RoutedEventArgs e)
+        {
+            var delta_time = TimeSpan.Zero - LastUpdateTime;
+            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMain, delta_time);
+        }
     }
 }

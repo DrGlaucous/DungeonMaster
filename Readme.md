@@ -174,6 +174,18 @@ boxx:0002:Ok
 
 ```
 
+Match progression procedures (from vegas event)
+
+
+
+if knockout:
+Ref counts by voice to a number, then pronounces "knockout"
+The arena emits a loud buzzer sound and the clock stops
+
+
+
+
+
 
 
 

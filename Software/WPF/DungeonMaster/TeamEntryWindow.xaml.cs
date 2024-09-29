@@ -150,11 +150,8 @@ namespace DungeonMaster
         }
 
         //runs these callbacks whenever something inside the class has changed
-        public delegate void OnTextUpdateEventHandler();
-        public event OnTextUpdateEventHandler? TxtEventHandler;
-
-        public delegate void OnImageUpdateEventHandler();
-        public event OnImageUpdateEventHandler? ImgEventHandler;
+        public event VoidDelegate? TxtEventHandler;
+        public event VoidDelegate? ImgEventHandler;
 
     }
 

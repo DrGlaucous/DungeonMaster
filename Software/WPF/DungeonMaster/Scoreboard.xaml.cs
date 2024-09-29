@@ -18,6 +18,7 @@ using System.Windows.Media.Effects;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using static DungeonMaster.Timer;
 
 namespace DungeonMaster
 {
@@ -26,38 +27,24 @@ namespace DungeonMaster
     /// </summary>
     public partial class Scoreboard : Window
     {
-        private System.Timers.Timer timer_major = new(20); //every 1/100 of a second
-        private DateTime last_trigger_time_major = DateTime.Now; //used to get the timespan between timer callbacks
 
-        //invokes update methods on change
-        public delegate void OnTimeUpdateHandler(TimeSpan time);
-        public event OnTimeUpdateHandler? TimeUpdateHandler;
 
-        private TimeSpan timespan_major = TimeSpan.Zero;
-        public TimeSpan TimespanMajor
-        {
-            get {
-                return timespan_major;
-            }
-            set {
-                timespan_major = value;
-                TimeUpdateHandler?.Invoke(timespan_major);
-            }
-        }
+        Timer timer_major = new(); //big clock
+        Timer timer_minor = new(); //stopwatch
 
-        private System.Timers.Timer timer_minor = new(20);
-        private DateTime last_trigger_time_minor = DateTime.Now;
-        private TimeSpan timespan_stopwatch = TimeSpan.Zero;
+
+        //private System.Timers.Timer timer_minor = new(20);
+        //private DateTime last_trigger_time_minor = DateTime.Now;
+        //private TimeSpan timespan_stopwatch = TimeSpan.Zero;
+
 
         private TeamEntryData team_1_data = new();
         private TeamEntryData team_2_data = new();
 
-        //keep the current state of the mediabuffer playback
-        private bool MediaBuf1IsPaused = true;
-        private bool MediaBuf2IsPaused = true;
 
-        delegate void TimespanMethodInvoker(TimeSpan time);
-        delegate void VoidMethodInvoker();
+        //delegates for updating some methods from outside threads
+        //delegate void TimespanMethodInvoker(TimeSpan time);
+        //delegate void VoidMethodInvoker();
 
 
         public enum ScoreboardAction
@@ -67,38 +54,41 @@ namespace DungeonMaster
             StartStopwatch, //start stopwatch countup
             StopStopwatch, //stop stopwatch countup
             ResetStopwatch, //reset stopwatch to 0
-            AddTimeMsMain, //add more time to main timer
+            AddTimeMain, //add more time to main timer
+
+            AddTimerEvent, //add an event to run at a certain time
+            RemoveTimerEvent, //remove a time-triggered event
+            ClearTimerEvent, //remove all timer-triggered events
+
             ShowImage, //overlays a static image onscreen
             HideImage, //hides the overlayed image
-            PlayMedia, //loads a color keyed video or audio from a local directory (on index 0 or 1)
-            PauseMedia, //pauses/plays the currently loaded video (toggle-type)
-            StopMedia, //stops playing video (normally plays 1x and halts on last frame)
+            
+            LoadMedia, //loads media to be played back
+            UnloadMedia, //unloads currently loaded media
+            PlayMedia, //trys to play the media
+            PauseMedia, //trys to pause the media
+            StopMedia, //stops + rewinds the media
+            HideMedia, //hides media image (only for video files)
+            ShowMedia, //shows media image (ony for video files)
         }
 
         public Scoreboard()
         {
             InitializeComponent();
 
-            timer_major.Elapsed += IncrementTimerMajor;
-            timer_major.AutoReset = true;
-            timer_major.Enabled = true;
-            timer_major.Stop();
+            //timer_minor.Elapsed += IncrementStopwatch;
+            //timer_minor.AutoReset = true;
+            //timer_minor.Enabled = true;
+            //timer_minor.Stop();
+
+            //set up timer objects
+            timer_major.TickUp = false;
+            timer_major.TimeUpdateHandler += SetTimerMajorTS; //update screen element when this is changed
+
+            timer_minor.TickUp = true;
+            timer_minor.TimeUpdateHandler += SetStopwatchTS; //update screen element when this is changed
 
 
-            timer_minor.Elapsed += IncrementStopwatch;
-            timer_minor.AutoReset = true;
-            timer_minor.Enabled = true;
-            timer_minor.Stop();
-
-            //set up AV players and add color key
-            ColorKeyAlphaEffect effect = new();
-            Brush brush = Effect.ImplicitInput;
-            effect.Input = brush;
-            MediaBuf1.Effect = effect;
-            MediaBuf1.LoadedBehavior = MediaState.Manual;
-
-            MediaBuf2.Effect = effect;
-            MediaBuf2.LoadedBehavior = MediaState.Manual;
 
 
         }
@@ -109,62 +99,11 @@ namespace DungeonMaster
             Application.Current.Shutdown();
         }
 
-        //adds time to the current major timer
+
+        //adds time to the current major timer (reqired for outside access)
         public void AddTimeMajor(TimeSpan newtime)
         {
-
-            TimespanMajor += newtime;
-            if (TimespanMajor.CompareTo(TimeSpan.Zero) < 0)
-            {
-                TimespanMajor = TimeSpan.Zero;
-            }
-
-            SetTimerMajorTS(TimespanMajor);
-        }
-
-        //starts counting down the main timer
-        public void StartTimerMajor()
-        {
-            last_trigger_time_major = DateTime.Now; //reset delta-time to zero
-            timer_major.Start();
-        }
-
-        //stops counting down the main timer
-        public void StopTimerMajor()
-        {
-            timer_major.Stop();
-        }
-
-        //sets main timer time to 0
-        public void ResetTimerMajor()
-        {
-            TimespanMajor = TimeSpan.Zero;
-            SetTimerMajorTS(TimespanMajor);
-        }
-
-        //ticks the timer down and runs a callback when time has reached 0
-        private void IncrementTimerMajor(Object? source, ElapsedEventArgs e)
-        {
-            TimeSpan delta_t = e.SignalTime - last_trigger_time_major;
-            TimespanMajor -= delta_t;
-            last_trigger_time_major = e.SignalTime;
-
-
-
-            //outtatime
-            if (TimespanMajor.CompareTo(TimeSpan.Zero) <= 0)
-            {
-                timer_major.Stop();
-                TimespanMajor = TimeSpan.Zero;
-
-                //run timer finished callback
-                EventHandler?.Invoke();
-
-            }
-
-            SetTimerMajorTS(TimespanMajor);
-
-
+            timer_major.AddTime(newtime);
         }
 
         //update the timer to display a timespan from an outside thread
@@ -173,66 +112,73 @@ namespace DungeonMaster
             //update hande from outside threads
             if (!Dispatcher.CheckAccess())
             {
-                Dispatcher.Invoke(new TimespanMethodInvoker(SetTimerMajorTS), args: time);
+                Dispatcher.Invoke(new TimespanDelegate(SetTimerMajorTS), args: time);
                 return;
             }
 
 
-            int minutes = time.Minutes;
+            int minutes = (int)(time.TotalMinutes);
             int seconds = time.Seconds;
             int centiseconds = time.Milliseconds / 10;
 
-            TimerMajor.Content = minutes.ToString("D2") + ":" + seconds.ToString("D2") + ":" + centiseconds.ToString("D2");
+            Countdown.Content = minutes.ToString("D2") + ":" + seconds.ToString("D2") + ":" + centiseconds.ToString("D2");
 
         }
+
+
 
         //callback when the main timer runs out
-        public delegate void OnTimerMajorEnd(); //(object sender, OnSerialGetEventHandler e)
-        public event OnTimerMajorEnd? EventHandler;
+        //public event OnTimerMajorEnd? EventHandler;
 
 
-
-        //stopwatch methods (todo: make one class that handles both the main timer and stopwatch and can be instantiated)
-
-        //starts counting up the stopwatch
-        public void StartStopwatch()
+        //pass the time-changed method out from the internal class so other events can run when this changes
+        public event TimespanDelegate? TimeMajorUpdateHandler {
+            add {
+                timer_major.TimeUpdateHandler += value;
+            }
+            remove {
+                timer_major.TimeUpdateHandler -= value;
+            }
+        }
+        public event TimespanDelegate? TimeMinorUpdateHandler
         {
-            last_trigger_time_minor = DateTime.Now; //reset delta-time to zero
-            timer_minor.Start();
+            add
+            {
+                timer_minor.TimeUpdateHandler += value;
+            }
+            remove
+            {
+                timer_minor.TimeUpdateHandler -= value;
+            }
         }
 
-        //stops counting up the stopwatch
-        public void StopStopwatch()
+        //used to send timer callbacks out to the TSC engine
+        public event IntDelegate? RunTSCEvent
         {
-            timer_minor.Stop();
+            add
+            {
+                timer_minor.RunTSC += value;
+                timer_major.RunTSC += value;
+            }
+            remove
+            {
+                timer_minor.RunTSC -= value;
+                timer_major.RunTSC -= value;
+            }
         }
 
-        //sets stopwatch time to 0
-        public void ResetStopwatch()
-        {
-            timespan_stopwatch = TimeSpan.Zero;
-            SetStopwatchTS(timespan_stopwatch);
-        }
 
-        //ticks the stopwatch up
-        private void IncrementStopwatch(Object? source, ElapsedEventArgs e)
-        {
-            TimeSpan delta_t = e.SignalTime - last_trigger_time_minor;
-            timespan_stopwatch += delta_t;
-            last_trigger_time_minor = e.SignalTime;
-            SetStopwatchTS(timespan_stopwatch);
-        }
         //update stopwatch to display timespan from outside thread
         private void SetStopwatchTS(TimeSpan time)
         {
             //update hande from outside threads
             if (!Dispatcher.CheckAccess())
             {
-                Dispatcher.Invoke(new TimespanMethodInvoker(SetStopwatchTS), args: time);
+                Dispatcher.Invoke(new TimespanDelegate(SetStopwatchTS), args: time);
                 return;
             }
 
-            int minutes = time.Minutes;
+            int minutes = (int)(time.TotalMinutes);
             int seconds = time.Seconds;
             int centiseconds = time.Milliseconds / 10;
 
@@ -241,32 +187,6 @@ namespace DungeonMaster
         }
 
 
-        //load video and play it over the scoreboard (stretched to width/height)
-        //path should be a local directory without the leading "./".
-        private bool LoadAVMedia(String path, int index)
-        {
-            
-            try
-            {
-                //make absolute path from relative one
-                var abspath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), path);
-                var ueri = new Uri(abspath);
-
-                if (index == 0)
-                {
-                    MediaBuf1.Source = ueri;
-                    MediaBuf1.Play();
-                }
-                else
-                {
-                    MediaBuf2.Source = ueri;
-                    MediaBuf2.Play();
-                }
-            }
-            catch { return false; }
-
-            return false;
-        }
         private bool LoadImage(String path)
         {
             try
@@ -286,42 +206,78 @@ namespace DungeonMaster
             switch (action)
             {
                 default: { break; }
-                case ScoreboardAction.StartMain:
-                    {
-                        StartTimerMajor();
-                        break;
-                    }
-                case ScoreboardAction.StopMain:
-                    {
-                        StopTimerMajor();
-                        break;
-                    }
+
+                //stopwatch actions
                 case ScoreboardAction.StartStopwatch:
                     {
-                        StartStopwatch();
+                        timer_minor.Start();
                         break;
                     }
                 case ScoreboardAction.StopStopwatch:
                     {
-                        StopStopwatch();
+                        timer_minor.Stop();
                         break;
                     }
                 case ScoreboardAction.ResetStopwatch:
                     {
-                        ResetStopwatch();
+                        timer_minor.Reset();
                         break;
                     }
-                case ScoreboardAction.AddTimeMsMain:
+                //counter actions
+                case ScoreboardAction.StartMain:
+                    {
+                        timer_major.Start();
+                        break;
+                    }
+                case ScoreboardAction.StopMain:
+                    {
+                        timer_major.Stop();
+                        break;
+                    }
+                case ScoreboardAction.AddTimeMain:
                     {
                         try
                         {
-                            int arg1 = (int)list[0];
-                            var tspan = TimeSpan.FromMilliseconds(arg1);
-                            AddTimeMajor(tspan);
+                            var arg1 = (TimeSpan)list[0];
+                            timer_major.AddTime(arg1);
                         }
                         catch { }
                         break;
                     }
+
+                //add-remove event actions
+                case ScoreboardAction.AddTimerEvent:
+                    {
+                        try
+                        {
+                            int arg1 = (int)list[0];
+                            var arg2 = (TimeSpan)list[1];
+                            timer_major.AddEvent(arg1, arg2);
+                        }
+                        catch { }
+                        break;
+                    }
+                case ScoreboardAction.RemoveTimerEvent:
+                    {
+                        try
+                        {
+                            int arg1 = (int)list[0];
+                            timer_major.RemoveEvent(arg1);
+                        }
+                        catch { }
+                        break;
+                    }
+                case ScoreboardAction.ClearTimerEvent:
+                    {
+                        try
+                        {
+                            timer_major.ClearEvents();
+                        }
+                        catch { }
+                        break;
+                    }
+
+                //media actions
                 case ScoreboardAction.ShowImage:
                     {
                         try
@@ -336,73 +292,54 @@ namespace DungeonMaster
                     {
                         ImageOverlay.Source = new BitmapImage();
                         break;
-                    }
-                case ScoreboardAction.PlayMedia:
+                    }                
+                case ScoreboardAction.LoadMedia:
                     {
                         try
                         {
-                            string arg1 = (string)list[0];
-                            int arg2 = (int)list[1];
-                            LoadAVMedia(arg1, arg2);
+                            int arg1 = (int)list[0];
+                            string arg2 = (string)list[1];
+                            if (arg1 == 0)
+                            {
+                                MediaBuf1.LoadAVMedia(arg2);
+                            }
+                            else
+                            {
+                                MediaBuf2.LoadAVMedia(arg2);
+                            }
                         }
                         catch { }
                         break;
                     }
+                case ScoreboardAction.UnloadMedia:
+                case ScoreboardAction.PlayMedia:
                 case ScoreboardAction.PauseMedia:
-                    {
-                        int arg1 = (int)list[0];
-                        if (arg1 == 0)
-                        {
-                            //don't toggle pause/play if the window is hidden
-                            if (MediaBuf1.Visibility == Visibility.Hidden)
-                                break;
-
-                            if (MediaBuf1IsPaused)
-                            {
-                                MediaBuf1IsPaused = false;
-                                MediaBuf1.Play();
-                            }
-                            else {
-                                MediaBuf1IsPaused = true;
-                                MediaBuf1.Pause(); //pause without resetting
-                            }
-                            
-                            
-                        }
-                        else
-                        {
-                            if (MediaBuf2.Visibility == Visibility.Hidden)
-                                break;
-
-
-                            MediaBuf2.Pause();
-                        }
-
-                        break;
-                    }
                 case ScoreboardAction.StopMedia:
+                case ScoreboardAction.HideMedia:
+                case ScoreboardAction.ShowMedia:
                     {
-                        int arg1 = (int)list[0];
-                        if (arg1 == 0)
+                        try
                         {
-                            MediaBuf1.Stop(); //reset to beginning
-                            MediaBuf1.Visibility = Visibility.Hidden;
+                            int arg1 = (int)list[0];
+                            MediaHandler handler_ref = (arg1 == 0)? MediaBuf1 : MediaBuf2;
+                            
+                            switch (action) {
+                                case ScoreboardAction.UnloadMedia: { handler_ref.UnloadAVMedia(); break; }
+                                case ScoreboardAction.PlayMedia: { handler_ref.PlayAVMedia(); break; }
+                                case ScoreboardAction.PauseMedia: { handler_ref.PauseAVMedia(); break; }
+                                case ScoreboardAction.StopMedia: { handler_ref.StopAVMedia(); break; }
+                                case ScoreboardAction.HideMedia: { handler_ref.Visibility = Visibility.Hidden; break; }
+                                case ScoreboardAction.ShowMedia: { handler_ref.Visibility = Visibility.Visible; break; }
+                            }
                         }
-                        else
-                        {
-                            MediaBuf2.Stop();
-                            MediaBuf2.Visibility = Visibility.Hidden;
-                        }
-
+                        catch { }
                         break;
                     }
+
 
             }
 
         }
-
-
-
 
         //pass refrences to teamname and image data so they'll be updated with the settings
         public void BindData(TeamEntryData red_data, TeamEntryData blue_data)
@@ -424,7 +361,7 @@ namespace DungeonMaster
             //update hande from outside threads
             if (!Dispatcher.CheckAccess())
             {
-                Dispatcher.Invoke(new VoidMethodInvoker(OnTextUpdate));
+                Dispatcher.Invoke(new VoidDelegate(OnTextUpdate));
                 return;
             }
 
@@ -441,7 +378,7 @@ namespace DungeonMaster
             //update hande from outside threads
             if (!Dispatcher.CheckAccess())
             {
-                Dispatcher.Invoke(new VoidMethodInvoker(OnImageUpdate));
+                Dispatcher.Invoke(new VoidDelegate(OnImageUpdate));
                 return;
             }
 

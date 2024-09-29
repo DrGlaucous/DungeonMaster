@@ -24,8 +24,7 @@ namespace DungeonMaster
     {
         //other things to run when we get serial data (namely the terminal window)
         //see https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/event
-        public delegate void OnSerialGetEventHandler(string serial_data); //(object sender, OnSerialGetEventHandler e)
-        public event OnSerialGetEventHandler? DataGetEventHandler;// { add { handler += value; } remove { handler -= value } }
+        public event StringDelegate? DataGetEventHandler;// { add { handler += value; } remove { handler -= value } }
 
         private SerialPort SerialPort = new SerialPort();
 

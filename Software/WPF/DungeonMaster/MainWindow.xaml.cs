@@ -62,30 +62,37 @@ namespace DungeonMaster
 
                 //scoreboard will now display this data
                 Scoreboard.BindData(TeamRedData, TeamBlueData);
+                StreamOverlay.BindData(TeamRedData, TeamBlueData);
             }
 
-            //link script interfaces
+            //link sub-module interfaces
             {
                 //link terminal to serial manager
-                SerialManager.DataGetEventHandler += new OnSerialGetEventHandler(Terminal.WriteToWindow); //serial in goes to terminal
-                SerialManager.DataGetEventHandler += new OnSerialGetEventHandler(ResponseEngine.ParseResponse); //serial in goes to response engine
+                SerialManager.DataGetEventHandler += new StringDelegate(Terminal.WriteToWindow); //serial in goes to terminal
+                SerialManager.DataGetEventHandler += new StringDelegate(ResponseEngine.ParseResponse); //serial in goes to response engine
 
-                ResponseEngine.RunEventHandler += new OnRunEventHandler(TextScriptEngine.PushEvent); //responses goes to TSC queue
-                Terminal.SendCommandHandler += new OnSendCommandHandler(TextScriptEngine.RunEventDebug); //terminal out goes to TSC debug
+                ResponseEngine.RunEventHandler += new IntDelegate(TextScriptEngine.PushEvent); //responses goes to TSC queue
+                Terminal.SendCommandHandler += new StringDelegate(TextScriptEngine.RunEventDebug); //terminal out goes to TSC debug
 
-                TextScriptEngine.SendMessageHandler += new OnWriteOutHandler(Terminal.WriteToWindow); //tsc messages go to terminal
-                TextScriptEngine.SendCommandHandler += new OnWriteOutHandler(SerialManager.SendString); //tsc commands go to serial
+                TextScriptEngine.SendMessageHandler += new StringDelegate(Terminal.WriteToWindow); //tsc messages go to terminal
+                TextScriptEngine.SendCommandHandler += new StringDelegate(SerialManager.SendString); //tsc commands go to serial
 
-                SimJudgeControls.SendResponseHandler += new JudgeControls.OnSerialGetEventHandler(ResponseEngine.ParseResponse);
-                SimBoxControls.SendResponseHandler += new BoxControls.OnSerialGetEventHandler(ResponseEngine.ParseResponse);
+                SimJudgeControls.SendResponseHandler += new StringDelegate(ResponseEngine.ParseResponse);
+                SimBoxControls.SendResponseHandler += new StringDelegate(ResponseEngine.ParseResponse);
+
+                //link timer control
+                TimerControl.ScoreboardControlHandler += new ScoreboardActionDelegate(Scoreboard.RunAction); //little clock time goes to the scoreboard timer
+                Scoreboard.TimeMajorUpdateHandler += new TimespanDelegate(TimerControl.UpdateTimeDisplay); //scoreboard time goes to the little clock on the main window
+                Scoreboard.RunTSCEvent += new IntDelegate(TextScriptEngine.PushEvent); //timebased events goe to TSC queue
+
+                TextScriptEngine.ScoreboardControlHandler += Scoreboard.RunAction; //bind TSC to scoreboard control
+                TextScriptEngine.LoadScript("./Script.tsc.txt");
+
+                Scoreboard.TimeMajorUpdateHandler += new TimespanDelegate(StreamOverlay.UpdateMainTimeDisplay);
+                Scoreboard.TimeMinorUpdateHandler += new TimespanDelegate(StreamOverlay.UpdateSecondTimeDisplay);
             }
 
-            //link timer control
-            TimerControl.EventHandler += Scoreboard.AddTimeMajor;
-            Scoreboard.TimeUpdateHandler += TimerControl.UpdateTimeDisplay; //links the little clock on the main window to the scoreboard's clock
 
-            TextScriptEngine.ScoreboardControlHandler += Scoreboard.RunAction; //bind TSC to scoreboard control
-            TextScriptEngine.LoadScript("./Script.tsc.txt");
 
             //test
             //Scoreboard.StartStopwatch();

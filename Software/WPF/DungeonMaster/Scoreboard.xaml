@@ -47,12 +47,12 @@
                         <Image x:Name="Bot2Pic" Grid.Column="3" Margin="0,1,0,3" Stretch="Fill"/>
                     </Grid>
                     <Label x:Name="Stopwatch" Content="00:00:00" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" FontSize="8" Foreground="#FF9E9E9E"/>
-                    <Label x:Name="TimerMajor" Content="00:00:00" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="20" Background="{x:Null}" Foreground="#FFAFAFAF"/>
+                    <Label x:Name="Countdown" Content="00:00:00" HorizontalAlignment="Center" VerticalAlignment="Bottom" FontSize="20" Background="{x:Null}" Foreground="#FFAFAFAF"/>
                 </Grid>
 
-                <MediaElement x:Name="MediaBuf1" Stretch="Fill"/>
+                <local:MediaHandler x:Name="MediaBuf1"/>
                 <Image x:Name="ImageOverlay" Stretch="Fill"/>
-                <MediaElement x:Name="MediaBuf2" Stretch="Fill"/>
+                <local:MediaHandler x:Name="MediaBuf2"/>
 
             </Grid>
    

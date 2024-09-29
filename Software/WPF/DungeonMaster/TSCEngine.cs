@@ -29,95 +29,6 @@ namespace DungeonMaster
         public string OPCode = String.Empty;
         public List<string> arguments = [];
 
-        //returns the number of args exepcted from the opcode (currently unused)
-        public static bool GetArgCount(string opcode, out int int_arg_ct, out int str_arg_ct)
-        {
-            switch (opcode) {
-                case "TGT":
-                    {
-                        int_arg_ct = 1;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                case "SLT":
-                    {
-                        int_arg_ct = 3;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                case "STS":
-                    {
-                        int_arg_ct = 2;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                case "SLC":
-                    {
-                        int_arg_ct = 3;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                case "SLR":
-                    {
-                        int_arg_ct = 0;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                case "SLS":
-                    {
-                        int_arg_ct = 6;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                case "WAI":
-                    {
-                        int_arg_ct = 2;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                case "PSH":
-                    {
-                        int_arg_ct = 1;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                case "POP":
-                    {
-                        int_arg_ct = 0;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                case "KEY":
-                    {
-                        int_arg_ct = 0;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                case "FRE":
-                    {
-                        int_arg_ct = 0;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                case "EVE":
-                    {
-                        int_arg_ct = 1;
-                        str_arg_ct = 0;
-                        break;
-                    }
-                default:
-                    {
-                        int_arg_ct = 0;
-                        str_arg_ct = 0;
-                        return false;
-                    }
-            }
-
-            return true;
-
-        }
-
-
         //re-assembles code and arguments into a TSC command for sending over the COM port
         public string ReassembleCmd() {
 
@@ -174,13 +85,11 @@ namespace DungeonMaster
 
 
         //writes to output functions
-        public delegate void OnWriteOutHandler(string output);
-        public event OnWriteOutHandler? SendCommandHandler; //sends output to terminal + over serial
-        public event OnWriteOutHandler? SendMessageHandler; //sends output to terminal only (for viewer messages)
+        public event StringDelegate? SendCommandHandler; //sends output to terminal + over serial
+        public event StringDelegate? SendMessageHandler; //sends output to terminal only (for viewer messages)
 
         //used to send new commands to the scoreboard
-        public delegate void OnScoreboardControlHandler(Scoreboard.ScoreboardAction action, params object[] list);
-        public event OnScoreboardControlHandler? ScoreboardControlHandler;
+        public event ScoreboardActionDelegate? ScoreboardControlHandler;
 
         //holds bit flags, valid range is between 0000 and 7999
         private byte[] flag_arr = new byte[1000];
@@ -350,20 +259,14 @@ namespace DungeonMaster
                             bool seeking = false;
                             switch (command.OPCode)
                             {
-                                //case "TGT":
-                                //case "SLT":
-                                //case "STS":
-                                //case "SLC":
-                                //case "SLR":
-                                //case "SLS":
-                                default:
+                                default: //forwards the command to the dongle
                                     {
                                         //send these commands out to the connected device
                                         string output = command.ReassembleCmd();
                                         SendCommandHandler?.Invoke(output);
                                         break;
                                     }
-                                case "MSG":
+                                case "MSG": //puts a message on the terminal
                                     {
                                         if (command.arguments.Count > 0)
                                         {
@@ -372,7 +275,7 @@ namespace DungeonMaster
                                         }
                                         break;
                                     }
-                                case "WAI":
+                                case "WAI": //waits xxxx seconds and yyyy milliseconds
                                     {
                                         try
                                         {
@@ -401,7 +304,7 @@ namespace DungeonMaster
                                         catch { }
                                         break;
                                     }
-                                case "PSH":
+                                case "PSH": //pushes a subroutine to the call stack
                                     {
                                         //jump to next event if we have a valid event argument
                                         try
@@ -418,7 +321,7 @@ namespace DungeonMaster
                                         catch { }
                                         break;
                                     }
-                                case "POP":
+                                case "POP": //returns to parent subroutine
                                     {
                                         try
                                         {
@@ -431,17 +334,17 @@ namespace DungeonMaster
                                         catch { }
                                         break;
                                     }
-                                case "KEY":
+                                case "KEY": //forces all incoming commands to wait until this one is finished before executing
                                     {
                                         key = true;
                                         break;
                                     }
-                                case "FRE":
+                                case "FRE": //allows commands to execute as soon as this one is finished OR it enters a "wait" state
                                     {
                                         key = false;
                                         break;
                                     }
-                                case "EVE":
+                                case "EVE": //goto event
                                     {
                                         //jump to next event if we have a valid event argument
                                         try
@@ -455,7 +358,7 @@ namespace DungeonMaster
 
                                         break;
                                     }
-                                case "END":
+                                case "END": //end event and return to idle mode (good practice to add, but is also manually appended to all commands)
                                     {
                                         //no need to clear stacks or queues here since we do that when we start a new event
 
@@ -541,6 +444,8 @@ namespace DungeonMaster
                                         ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.ResetStopwatch);
                                         break;
                                     }
+                                
+                                
                                 case "TIG": //TImer Go
                                     {
                                         ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StartMain);
@@ -556,9 +461,9 @@ namespace DungeonMaster
                                         try
                                         {
                                             int mins = GetNumberFromString(command.arguments[0]);
-                                            int secs = GetNumberFromString(command.arguments[0]);
-                                            int total = (mins * 60 + secs) * 1000;
-                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMsMain, total);
+                                            int secs = GetNumberFromString(command.arguments[1]);
+                                            var total = TimeSpan.FromSeconds((mins * 60 + secs));
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMain, total);
                                         }
                                         catch { }
                                         break;
@@ -568,48 +473,109 @@ namespace DungeonMaster
                                         try
                                         {
                                             int mins = GetNumberFromString(command.arguments[0]);
-                                            int secs = GetNumberFromString(command.arguments[0]);
-                                            int total = (mins * 60 + secs) * -1000;
-                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMsMain, total);
+                                            int secs = GetNumberFromString(command.arguments[1]);
+                                            var total = TimeSpan.FromSeconds(-(mins * 60 + secs));
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMain, total);
                                         }
                                         catch { }
                                         break;
                                     }
                                 case "TEU": //Timer Event pUsh <TEUxxxx:yyyy:zzzz set event xxxx to be run when the timer hits yyyy minutes, zzzz seconds
                                     {
+                                        try
+                                        {
+                                            int event_num = GetNumberFromString(command.arguments[0]);
+                                            int mins = GetNumberFromString(command.arguments[1]);
+                                            int secs = GetNumberFromString(command.arguments[2]);
+                                            var total = TimeSpan.FromMilliseconds((mins * 60 + secs) * 1000);
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMain, event_num, total);
+                                        }
+                                        catch { }
                                         break;
                                     }
                                 case "TEO": //Timer Event pOp <TEOxxxx removes event xxxx from the list of events to execute
                                     {
+                                        try
+                                        {
+                                            int event_num = GetNumberFromString(command.arguments[0]);
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.RemoveTimerEvent, event_num);
+                                        }
+                                        catch { }
                                         break;
                                     }
                                 case "TEC": //Timer Event Clear <TEC removes all events from the list of events to execute
                                     {
+                                        try
+                                        {
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.ClearTimerEvent);
+                                        }
+                                        catch { }
                                         break;
                                     }
-                                case "AVS": //Audio Video Start, <AVSxxxx:string_arg$ plays an audio clip or video clip on media buffer xxxx [0 or 1]
+
+                                case "AVL": //Audio Video Load, <AVLxxxx:string_arg$ loads an audio clip or video clip on media buffer xxxx [0 or 1] to be played with AVY
                                     {
                                         try
                                         {
                                             var player_idx = GetNumberFromString(command.arguments[0]);
                                             string path = Regex.Split(command.arguments[1], "\\$")[0]; //trim potential '$' delimiter from the string arg
 
-                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.PlayMedia, path, player_idx);
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.LoadMedia, player_idx, path);
                                         }
                                         catch { }
                                         break;
                                     }
-                                case "AVP": //Audio Video Pause, <AVPxxxx, pauses AV playback on media buffer xxxx [0 or 1]
+                                case "AVU": //Audio Video Unload, un-loads the media buffer on xxxx, used to conserve memory when not in use (automatically called before AVL)
                                     {
                                         try
                                         {
                                             var player_idx = GetNumberFromString(command.arguments[0]);
-                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StopMedia, player_idx);
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.ShowMedia, player_idx);
                                         }
                                         catch { }
                                         break;
                                     }
-                                case "AVH": //Audio Video Hide, <AVSxxxx, stops the AV playback on media buffer xxxx [0 or 1] 
+                                case "AVH": //Audio Video Hide, <AVHxxxx, hides the media buffer xxxx, but doesn't stop it
+                                    {
+                                        try
+                                        {
+                                            var player_idx = GetNumberFromString(command.arguments[0]);
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.HideMedia, player_idx);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "AVV": //Audio Video Visible, un-hides the media buffer xxxx
+                                    {
+                                        try
+                                        {
+                                            var player_idx = GetNumberFromString(command.arguments[0]);
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.ShowMedia, player_idx);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "AVP": //Audio Video Pause, pauses media without resetting it
+                                    {
+                                        try
+                                        {
+                                            var player_idx = GetNumberFromString(command.arguments[0]);
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.PauseMedia, player_idx);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "AVY": //Audio Video plaY, starts media playback
+                                    {
+                                        try
+                                        {
+                                            var player_idx = GetNumberFromString(command.arguments[0]);
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.PlayMedia, player_idx);
+                                        }
+                                        catch { }
+                                        break;
+                                    }
+                                case "AVS": //Audio Video Stop, stops media playback and resets it
                                     {
                                         try
                                         {
@@ -818,9 +784,7 @@ namespace DungeonMaster
             ArenaDoor = 8,
         }
 
-
-        public delegate void OnRunEventHandler(int event_no);
-        public event OnRunEventHandler? RunEventHandler; //sends output to TSC engine
+        public event IntDelegate? RunEventHandler; //sends output to TSC engine
 
         //currently parses one input at a time
         public void ParseResponse(string input)

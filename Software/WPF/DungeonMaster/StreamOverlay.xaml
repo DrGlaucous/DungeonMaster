@@ -5,13 +5,64 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DungeonMaster"
         mc:Ignorable="d"
-        Title="StreamOverlay" Height="128" Width="1024" Closed="Window_Closed">
+        Title="StreamOverlay" Closed="WindowClosed" Height="164" Width="1024">
     <Grid>
-        <Grid.Background>
-            <ImageBrush ImageSource="/StreamOverlay2.png"/>
-        </Grid.Background>
-        <MediaElement x:Name="TestMediaElement" HorizontalAlignment="Left" Height="108" Margin="10,71,0,0" VerticalAlignment="Top" Width="247"/>
-        <Button x:Name="Bttn" Content="Button" HorizontalAlignment="Left" Margin="10,210,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.777,-7.592" Click="Bttn_Click"/>
+        <Viewbox Stretch="Fill">
+            <Grid Height="128" Width="1024">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20*"/>
+                    <ColumnDefinition Width="10*"/>
+                    <ColumnDefinition Width="20*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.Background>
+                    <ImageBrush ImageSource="/StreamOverlay2.png"/>
+                </Grid.Background>
 
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="30*"/>
+                        <ColumnDefinition Width="15*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="Team1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Team 1" VerticalAlignment="Center" Margin="64,0,0,0" FontSize="36" Foreground="#FFB5B5B5" />
+                        <TextBlock x:Name="Robot1" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Robot 1" VerticalAlignment="Center" Margin="64,0,0,0" FontSize="36" Foreground="#FFB5B5B5" Grid.Row="1"/>
+                    </Grid>
+                    <Image x:Name="Bot1Pic" Grid.Column="1" Height="100" Width="100" HorizontalAlignment="Left"/>
+                </Grid>
+                <Grid Grid.Column="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="15*"/>
+                        <ColumnDefinition Width="30*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock x:Name="Team2" HorizontalAlignment="Right" TextWrapping="Wrap" Text="Team 2" VerticalAlignment="Center" Margin="0,0,64,0" FontSize="36" Foreground="#FFB5B5B5" />
+                        <TextBlock x:Name="Robot2" HorizontalAlignment="Right" TextWrapping="Wrap" Text="Robot 2" VerticalAlignment="Center" Margin="0,0,64,0" FontSize="36" Foreground="#FFB5B5B5" Grid.Row="1"/>
+                    </Grid>
+                    <Image x:Name="Bot2Pic" Height="100" Width="100" HorizontalAlignment="Right"/>
+                </Grid>
+
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10*"/>
+                        <RowDefinition Height="8*"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="TimerMain" HorizontalAlignment="Center" TextWrapping="Wrap" Text="00:00:00" VerticalAlignment="Center" FontSize="40" Margin="0,12,0,0"/>
+                    <TextBlock x:Name="TimerSecond" HorizontalAlignment="Center" TextWrapping="Wrap" Text="00:00:00" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,0,16" FontSize="24"/>
+                </Grid>
+
+            </Grid>
+
+
+
+
+        </Viewbox>
     </Grid>
 </Window>

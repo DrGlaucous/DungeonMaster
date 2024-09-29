@@ -20,8 +20,7 @@ namespace DungeonMaster
     /// </summary>
     public partial class Terminal : UserControl
     {
-        public delegate void OnSendCommandHandler(string out_text); //(object sender, OnSerialGetEventHandler e)
-        public event OnSendCommandHandler? SendCommandHandler;// { add { handler += value; } remove { handler -= value } }
+        public event StringDelegate? SendCommandHandler;// { add { handler += value; } remove { handler -= value } }
 
         static readonly int max_text_length = 5000;
         public Terminal()

@@ -17,12 +17,14 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="M" HorizontalAlignment="Center" VerticalAlignment="Center" Height="auto" Width="auto"/>
-            <TextBlock Grid.Column="2" Text="S" HorizontalAlignment="Center" VerticalAlignment="Center" Height="auto" Width="auto"/>
-            <Button x:Name="AddButton" Grid.Column="4" Content="Add" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="40" Margin="3,0,0,0" Click="AddButtonClick"/>
+            <TextBlock Grid.Column="2" Text=" S " HorizontalAlignment="Center" VerticalAlignment="Center" Height="auto" Width="auto"/>
+            <Button x:Name="AddButton" Grid.Column="4" Content="  Add  " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="3,0,0,0" Click="AddButtonClick"/>
             <local:NumericUpDown x:Name="MinuteSelector" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="77"/>
-            <local:NumericUpDown x:Name="SecondSelector" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Width="66"/>
+            <local:NumericUpDown x:Name="SecondSelector" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Height="20" Width="66"/>
+            <Button x:Name="ClearButton" Grid.Column="5" Content="  Clear  " HorizontalAlignment="Center" VerticalAlignment="Center" Margin="3,0,0,0" Click="ClearButtonClick"/>
         </Grid>
         <Rectangle Stroke="Black"/>
         <TextBlock x:Name="TimeDisplay" HorizontalAlignment="Center" TextWrapping="Wrap" Text="00:00:00" VerticalAlignment="Center" Margin="0,3,-1,3"/>

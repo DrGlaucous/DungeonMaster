@@ -26,35 +26,92 @@ namespace DungeonMaster
             InitializeComponent();
         }
 
-        public void TestPlayVideo()
-        {
-            ColorKeyAlphaEffect effect = new ColorKeyAlphaEffect();
-            Brush brush = Effect.ImplicitInput;
-            effect.Input = brush;
+        private TeamEntryData team_1_data = new();
+        private TeamEntryData team_2_data = new();
 
-            TestMediaElement.Effect = effect;
-            TestMediaElement.LoadedBehavior = MediaState.Manual;
-
-            //make absolute path from relative one
-            var path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Sauce.mp4");
-            var ueri = new Uri(path);
-
-            TestMediaElement.Source = ueri;
-            //TestMediaElement.Play();
-            
-
-        }
-
-        private void Bttn_Click(object sender, RoutedEventArgs e)
-        {
-            TestPlayVideo();
-            TestMediaElement.Play();
-        }
 
         //close everything with this window
-        private void Window_Closed(object sender, EventArgs e)
+        private void WindowClosed(object sender, EventArgs e)
         {
             Application.Current.Shutdown();
+        }
+
+        //pass refrences to teamname and image data so they'll be updated with the settings
+        public void BindData(TeamEntryData red_data, TeamEntryData blue_data)
+        {
+
+            this.team_1_data = red_data;
+            this.team_2_data = blue_data;
+
+            this.team_1_data.TxtEventHandler += OnTextUpdate;
+            this.team_2_data.TxtEventHandler += OnTextUpdate;
+
+            this.team_1_data.ImgEventHandler += OnImageUpdate;
+            this.team_2_data.ImgEventHandler += OnImageUpdate;
+        }
+
+        //invoked whenever text fields of the bound data change
+        private void OnTextUpdate()
+        {
+            //update hande from outside threads
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new VoidDelegate(OnTextUpdate));
+                return;
+            }
+
+            Team1.Text = team_1_data.TeamName;
+            Robot1.Text = team_1_data.BotName;
+
+            Team2.Text = team_2_data.TeamName;
+            Robot2.Text = team_2_data.BotName;
+        }
+        private void OnImageUpdate()
+        {
+            //update hande from outside threads
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new VoidDelegate(OnImageUpdate));
+                return;
+            }
+
+            Bot1Pic.Source = team_1_data.BotImage;
+            Bot2Pic.Source = team_2_data.BotImage;
+
+
+        }
+
+        public void UpdateMainTimeDisplay(TimeSpan time)
+        {
+            //update hande from outside threads
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new TimespanDelegate(UpdateMainTimeDisplay), args: time);
+                return;
+            }
+
+            int minutes = (int)(time.TotalMinutes);
+            int seconds = time.Seconds;
+            int centiseconds = time.Milliseconds / 10;
+
+            TimerMain.Text = minutes.ToString("D2") + ":" + seconds.ToString("D2") + ":" + centiseconds.ToString("D2");
+
+        }
+        public void UpdateSecondTimeDisplay(TimeSpan time)
+        {
+            //update hande from outside threads
+            if (!Dispatcher.CheckAccess())
+            {
+                Dispatcher.Invoke(new TimespanDelegate(UpdateSecondTimeDisplay), args: time);
+                return;
+            }
+
+            int minutes = (int)(time.TotalMinutes);
+            int seconds = time.Seconds;
+            int centiseconds = time.Milliseconds / 10;
+
+            TimerSecond.Text = minutes.ToString("D2") + ":" + seconds.ToString("D2") + ":" + centiseconds.ToString("D2");
+
         }
 
 

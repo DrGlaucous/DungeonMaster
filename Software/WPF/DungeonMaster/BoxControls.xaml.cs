@@ -21,8 +21,7 @@ namespace DungeonMaster
     /// </summary>
     public partial class BoxControls : UserControl
     {
-        public delegate void OnSerialGetEventHandler(string responsedata);
-        public event OnSerialGetEventHandler? SendResponseHandler;
+        public event StringDelegate? SendResponseHandler;
 
         public BoxControls()
         {
