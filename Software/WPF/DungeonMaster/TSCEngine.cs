@@ -600,6 +600,35 @@ namespace DungeonMaster
                                         ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.HideImage);
                                         break;
                                     }
+                                case "TRA": //TRAnsition tsc script <TRA[event number]:[path_to_script$]
+                                    {
+                                        try
+                                        {
+                                            int try_event_no = GetNumberFromString(command.arguments[0]);
+                                            string path = Regex.Split(command.arguments[1], "\\$")[0]; //trim potential '$' delimiter from the string arg
+                                            //if we've successfully loaded this stage, go to the next event
+                                            if (LoadScript(path))
+                                            {
+                                                //run the next event
+                                                event_no = try_event_no;
+                                                command_start_index = 0;
+                                                event_start_index = 0;
+                                                seeking = true;
+                                            }
+                                            else
+                                            {
+                                                //run "END"
+
+                                                //set this to break out of this event list
+                                                seeking = true;
+
+                                                //break out of while loop
+                                                state = EngineState.Idle;
+                                            }
+                                        }
+                                        catch { }
+                                        break;
+                                    }
                             }
 
                             //stop running this event if we've entered "seeking" mode
