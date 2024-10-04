@@ -801,17 +801,29 @@ namespace DungeonMaster
             PacketGetOk = 0,
             ButtonStatus = 1,
         }
-        public enum ButtonId {
-            StartMatch = 0,
-            PausePlay = 1,
-            EndMatch = 2,
-            Stopwatch = 3,
-            RedWins = 4,
-            BlueWins = 5,
-            RedReady = 6,
-            BlueReady = 7,
-            ArenaDoor = 8,
-        }
+
+        //events to run, tied with button IDs
+        public enum ButtonEventNumbers
+        {
+            StartMatchActive = 1000,
+            PausePlayActive = 1001,
+            EndMatchActive = 1002,
+            StopwatchActive = 1003,
+            RedWinsActive = 1004,
+            BlueWinsActive = 1005,
+            RedReadyActive = 1006,
+            BlueReadyActive = 1007,
+            ArenaDoorActive = 1008,
+            StartMatchInactive = 2000,
+            PausePlayInactive = 2001,
+            EndMatchInactive = 2002,
+            StopwatchInactive = 2003,
+            RedWinsInactive = 2004,
+            BlueWinsInactive = 2005,
+            RedReadyInactive = 2006,
+            BlueReadyInactive = 2007,
+            ArenaDoorInactive = 2008,
+        };
 
         public event IntDelegate? RunEventHandler; //sends output to TSC engine
 
@@ -841,12 +853,13 @@ namespace DungeonMaster
                     default: { break; }
                     case ResponseType.ButtonStatus:
                         {
-                            string[] split_response = Regex.Split(response_data, " ");
-                            int button_id = Int32.Parse(split_response[0]);
-                            bool status = split_response[1][0] == 'O';
+                            //string[] split_response = Regex.Split(response_data, " ");
+                            //int button_id = Int32.Parse(split_response[0]);
+                            //bool status = split_response[1][0] == 'O';
 
-                            //run event based on button number + status "on" events are 1000 range, "off" events are 2000 range
-                            int event_num = 1000 * (status ? 1 : 2) + button_id;
+                            ////run event based on button number + status "on" events are 1000 range, "off" events are 2000 range
+                            //int event_num = 1000 * (status ? 1 : 2) + button_id;
+                            int event_num = Int32.Parse(response_data);
                             RunEventHandler?.Invoke(event_num);
 
                             break;

@@ -178,15 +178,23 @@ boxx - box
 
 response types:
 0 - PacketGetOk //command was gotten successfully
-1 - ButtonStatus //reporting a button state change
+(depricated: 1 - ButtonStatus, removed in favor of a more versitile event run request)
+1 - RunEvent //requests an event be added to the script stack
 
 
 with packetGetOk, simply print response and do nothing else (format is not strict)
 
-with button response, this is the format:
+
+OLD: with button response, this is the format:
 X O //button ID [x] is ON
 X F //button ID [x] is OFF
 Ok //command was gotten successfully
+
+
+with RunEvent, the type is as follows:
+xxxx - event number
+<cccc:cccc:cccc:xxxx\0
+<[type]:[id]:[r_type]:[event_no]
 
 
 Button IDs:

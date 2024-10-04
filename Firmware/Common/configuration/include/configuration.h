@@ -36,16 +36,26 @@ enum ResponseType {
     ButtonStatus = 1,
 };
 
-enum ButtonStatusIds {
-    StartMatch = 0,
-    PausePlay = 1,
-    EndMatch = 2,
-    Stopwatch = 3,
-    RedWins = 4,
-    BlueWins = 5,
-    RedReady = 6,
-    BlueReady = 7,
-    ArenaDoor = 8,
+//events to run, tied with button IDs
+enum ButtonEventNumbers {
+    StartMatchActive = 1000,
+    PausePlayActive = 1001,
+    EndMatchActive = 1002,
+    StopwatchActive = 1003,
+    RedWinsActive = 1004,
+    BlueWinsActive = 1005,
+    RedReadyActive = 1006,
+    BlueReadyActive = 1007,
+    ArenaDoorActive = 1008,
+    StartMatchInInactive = 2000,
+    PausePlayInInactive = 2001,
+    EndMatchInInactive = 2002,
+    StopwatchInactive = 2003,
+    RedWinsInactive = 2004,
+    BlueWinsInactive = 2005,
+    RedReadyInactive = 2006,
+    BlueReadyInactive = 2007,
+    ArenaDoorInactive = 2008,
 };
 
 ////////RADIO SETTINGS////////

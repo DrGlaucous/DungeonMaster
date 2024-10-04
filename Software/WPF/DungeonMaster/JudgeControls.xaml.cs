@@ -51,38 +51,38 @@ namespace DungeonMaster
 
         private void HandleButtonEvent(string button_name, bool is_pressed)
         {
-            ButtonId button_id;// = ButtonId.StartMatch;
+            ButtonEventNumbers button_id;// = ButtonId.StartMatch;
 
             switch (button_name)
             {
                 case "StartMatchButton":
                     {
-                        button_id = ButtonId.StartMatch;
+                        button_id = is_pressed ? ButtonEventNumbers.StartMatchActive : ButtonEventNumbers.StartMatchInactive;
                         break;
                     }
                 case "StopwatchButton":
                     {
-                        button_id = ButtonId.Stopwatch;
+                        button_id = is_pressed ? ButtonEventNumbers.StopwatchActive : ButtonEventNumbers.StopwatchInactive;
                         break;
                     }
                 case "PausePlayButton":
                     {
-                        button_id = ButtonId.PausePlay;
+                        button_id = is_pressed ? ButtonEventNumbers.PausePlayActive : ButtonEventNumbers.PausePlayInactive;
                         break;
                     }
                 case "RedWinsButton":
                     {
-                        button_id = ButtonId.RedWins;
+                        button_id = is_pressed ? ButtonEventNumbers.RedWinsActive : ButtonEventNumbers.RedWinsInactive;
                         break;
                     }
                 case "BlueWinsButton":
                     {
-                        button_id = ButtonId.BlueWins;
+                        button_id = is_pressed ? ButtonEventNumbers.BlueWinsActive : ButtonEventNumbers.BlueWinsInactive;
                         break;
                     }
                 case "EndMatchButton":
                     {
-                        button_id = ButtonId.EndMatch;
+                        button_id = is_pressed ? ButtonEventNumbers.EndMatchActive : ButtonEventNumbers.EndMatchInactive;
                         break;
                     }
                 default: { return; }
@@ -90,7 +90,7 @@ namespace DungeonMaster
 
             //assemble response
             //type: JC, UUID: -1, response type: buttonStatus
-            string response = "<1:-1:1:" + ((int)button_id).ToString() + ' ' + (is_pressed? 'O' : 'F');
+            string response = "<1:-1:1:" + ((int)button_id).ToString();
             SendResponseHandler?.Invoke(response);
 
         }
