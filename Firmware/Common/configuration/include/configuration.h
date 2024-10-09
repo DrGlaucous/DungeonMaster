@@ -38,22 +38,25 @@ enum ResponseType {
 
 //events to run, tied with button IDs
 enum ButtonEventNumbers {
-    StartMatchActive = 1000,
-    PausePlayActive = 1001,
-    EndMatchActive = 1002,
-    StopwatchActive = 1003,
-    RedWinsActive = 1004,
-    BlueWinsActive = 1005,
-    RedReadyActive = 1006,
-    BlueReadyActive = 1007,
-    ArenaDoorActive = 1008,
-    StartMatchInInactive = 2000,
-    PausePlayInInactive = 2001,
-    EndMatchInInactive = 2002,
-    StopwatchInactive = 2003,
-    RedWinsInactive = 2004,
-    BlueWinsInactive = 2005,
-    RedReadyInactive = 2006,
+    //controller enums
+    ButtonAActive = 1000,
+    ButtonBActive = 1001,
+    ButtonCActive = 1002,
+    ButtonDActive = 1003,
+    ButtonEActive = 1004,
+    ButtonFActive = 1005,
+    ButtonGActive = 1006,
+    ButtonHActive = 1007,
+    ButtonAInactive = 2000,
+    ButtonBInactive = 2001,
+    ButtonCInactive = 2002,
+    ButtonDInactive = 2003,
+    ButtonEInactive = 2004,
+    ButtonFInactive = 2005,
+    ButtonGInactive = 2006,
+    ButtonHInactive = 2007,
+
+
     BlueReadyInactive = 2007,
     ArenaDoorInactive = 2008,
 };

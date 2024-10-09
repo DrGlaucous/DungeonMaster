@@ -58,11 +58,59 @@ void run_parse_actions() {
     }
 }
 
+/*
+
+button layout:
+A|B
+C|D
+E|F
+G|H
+
+input pins
+19|32
+21|33
+22|27
+23|14
+
+output pins
+4|25
+16|26
+17|12
+5|13
+
+*/
+
+int array_size = 8;
+int input_array[] = {19, 32, 21, 33, 22, 27, 23, 14};
+int output_array[] = {4, 25, 16, 26, 17, 12, 5, 13};
+int last_button_state_array[] = {0,0,0,0,0,0,0,0};
+int press_array[] = {
+    ButtonAActive,
+    ButtonBActive,
+    ButtonCActive,
+    ButtonDActive,
+    ButtonEActive,
+    ButtonFActive,
+    ButtonGActive,
+    ButtonHActive,
+};
+int release_array[] = {
+    ButtonAInactive,
+    ButtonBInactive,
+    ButtonCInactive,
+    ButtonDInactive,
+    ButtonEInactive,
+    ButtonFInactive,
+    ButtonGInactive,
+    ButtonHInactive,
+};
+
+
 
 void setup()
 {
 
-    //Serial.begin(115200);
+    Serial.begin(115200);
 
     handler = new RadioNowHandler(
         NETWORKID,
@@ -76,7 +124,33 @@ void setup()
         g_dongle_1.local_master_key
     );
 
-    //Serial.println("ready");
+
+    //test
+
+    //voltmeter
+    pinMode(34, INPUT);
+
+    //buttons
+    for(int i = 0; i < array_size; ++i) {
+        pinMode(input_array[i], INPUT_PULLUP);
+        pinMode(output_array[i], OUTPUT);
+    }
+
+    
+    //LEDs
+    // pinMode(26, OUTPUT);
+    // pinMode(25, OUTPUT);
+    // pinMode(12, OUTPUT);
+    // pinMode(13, OUTPUT);
+    // pinMode(5, OUTPUT);
+    // pinMode(17, OUTPUT);
+    // pinMode(16, OUTPUT);
+    // pinMode(4, OUTPUT);
+
+
+
+
+    Serial.println("ready");
 
 }
 
@@ -103,6 +177,31 @@ void loop() {
                 break;
             }
         }
+
+    }
+
+
+    for(int i = 0; i < array_size; ++i) {
+        int button_state = digitalRead(input_array[i]);
+
+        //only do things on state change
+        if(last_button_state_array[i] != button_state) {
+            //low = on
+            if(!button_state) {
+                digitalWrite(output_array[i], 1);
+
+                string response = "<" + (int)my_id.type + ':' + (int)my_id.uu_id + ':' + (int)ResponseType::ButtonStatus + ':' + press_array[i] + '\n';
+                auto packet = RemoteGenericPacket((const uint8_t*)response.c_str(), response.size(), (size_t)ResponseType::ButtonStatus);
+
+                handler->send_packet(packet, g_dongle_1.mac_address);
+            } else {
+                digitalWrite(output_array[i], 0);
+            }
+        }
+        last_button_state_array[i] = button_state;
+        
+
+
 
     }
 

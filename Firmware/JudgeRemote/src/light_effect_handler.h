@@ -30,7 +30,7 @@ enum LightPointState {
     LStateRunning,
     LStatePaused,
     LStateRunToPoint,
-}
+};
 
 //A single light
 struct LightPoint {
