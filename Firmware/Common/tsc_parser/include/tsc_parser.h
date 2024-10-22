@@ -18,26 +18,50 @@ using std::queue;
 
 enum TscCommandType {
     TSC_NULL = IS_COMMAND('\0', '\0', '\0'), //nul
+    
+    //Target <TGT[uuid]
     TSC_TGT = IS_COMMAND('T', 'G', 'T'), //dongle only
+    
+    //set light target <SLT[start address]:[stop address]:[step count]
     TSC_SLT = IS_COMMAND('S', 'L', 'T'),
-    TSC_STS = IS_COMMAND('S', 'T', 'S'),
-    TSC_SLC = IS_COMMAND('S', 'L', 'C'),
+
+    //Push light color <SLC[R]:[G]:[B]:[time_ms]
+    TSC_PLC = IS_COMMAND('P', 'L', 'C'),
+
+    //clear light colors <CLC
+    TSC_CLC = IS_COMMAND('C', 'L','C'),
+
+    //reset light index,  <RLI
+    TSC_RLI = IS_COMMAND('R', 'L','I'),
+
+    //reset light timer <RLT
+    TSC_RLT = IS_COMMAND('R', 'L','T'),
+
+    //set light ripple <SLR[time millis]
     TSC_SLR = IS_COMMAND('S', 'L', 'R'),
-    TSC_SLS = IS_COMMAND('S', 'L', 'S'),
-    TSC_WAI = IS_COMMAND('W', 'A', 'I'), //pc only
-    TSC_PSH = IS_COMMAND('P', 'S', 'H'), //pc only
-    TSC_POP = IS_COMMAND('P', 'O', 'P'), //pc only
-    TSC_KEY = IS_COMMAND('K', 'E', 'Y'), //pc only
-    TSC_FRE = IS_COMMAND('F', 'R', 'E'), //pc only
-    TSC_EVE = IS_COMMAND('E', 'V', 'E'), //pc only
+
+
+    //set transition speed
+    //TSC_STS = IS_COMMAND('S', 'T', 'S'),
+    //set light rainbow
+    //TSC_SLR = IS_COMMAND('S', 'L', 'R'),
+    //set light strobe
+    //TSC_SLS = IS_COMMAND('S', 'L', 'S'),
+
+    // TSC_WAI = IS_COMMAND('W', 'A', 'I'), //pc only
+    // TSC_PSH = IS_COMMAND('P', 'S', 'H'), //pc only
+    // TSC_POP = IS_COMMAND('P', 'O', 'P'), //pc only
+    // TSC_KEY = IS_COMMAND('K', 'E', 'Y'), //pc only
+    // TSC_FRE = IS_COMMAND('F', 'R', 'E'), //pc only
+    // TSC_EVE = IS_COMMAND('E', 'V', 'E'), //pc only
 };
 
 //no need for string commands: those 
 class TscCommand {
     public:
-    TscCommandType type = TSC_NULL;
-    int16_t tsc_args[TSC_MAX_ARG_COUNT] = {};
-    uint8_t command_count = 0;
+    TscCommandType type = TSC_NULL; //type of command
+    int16_t tsc_args[TSC_MAX_ARG_COUNT] = {}; //array of potential arguments
+    uint8_t command_count = 0; //number of tsc args that are in use
 
     vector<uint8_t> stringify_command();
 

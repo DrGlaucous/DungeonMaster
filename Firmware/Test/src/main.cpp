@@ -12,17 +12,27 @@
 #define BOX_ADDRESS {0xA0, 0x0E, 0x04, 0x0F, 0xFD, 0x64}
 
 #ifdef SENDER_1
-char my_address[] = DONGLE_ADDRESS;
-char other_address[] = BOX_ADDRESS;
-char key_net[] = ENCRYPTKEY_NETWORK;
-char key_peer[] = ENCRYPTKEY_PEER;
+// char my_address[] = DONGLE_ADDRESS;
+// char other_address[] = BOX_ADDRESS;
+// char key_net[] = ENCRYPTKEY_NETWORK;
+// char key_peer[] = ENCRYPTKEY_PEER;
 char packetstuff[] = "OUTPUT SENDER\0";
+
+const char key_net[] = ENCRYPTKEY_NETWORK;
+const DeviceInfo& my_id = g_dongle_1;
+const DeviceInfo& other_id = g_jcontroller_1;
+
 #else
-char my_address[] = BOX_ADDRESS;
-char other_address[] = DONGLE_ADDRESS;
-char key_net[] = ENCRYPTKEY_NETWORK;
-char key_peer[] = ENCRYPTKEY_PEER;
+// char my_address[] = BOX_ADDRESS;
+// char other_address[] = DONGLE_ADDRESS;
+// char key_net[] = ENCRYPTKEY_NETWORK;
+// char key_peer[] = ENCRYPTKEY_PEER;
 char packetstuff[] = "OUTPUT GETTER\0";
+
+const char key_net[] = ENCRYPTKEY_NETWORK;
+const DeviceInfo& my_id = g_jcontroller_1;
+const DeviceInfo& other_id = g_dongle_1;
+
 #endif
 
 //MUST be initialized in the mainloop, not in the constructor!
@@ -43,12 +53,12 @@ void setup()
     handler = new RadioNowHandler(
         NETWORKID,
         key_net,
-        my_address
+        my_id.mac_address
     );
 
     handler->add_peer(
-        other_address,
-        key_peer
+        other_id.mac_address, //other_address
+        other_id.local_master_key
     );
 
     Serial.print("ready\n");
@@ -100,7 +110,7 @@ void loop()
     );
 
 
-    if(handler->send_packet(out_packet, other_address))
+    if(handler->send_packet(out_packet, other_id.mac_address))
         Serial.printf("sent packet: %s\n", out_packet.get_data_ptr());
     else
         Serial.printf("TX Fail!\n");

@@ -1,7 +1,7 @@
 #pragma once
 
 //Configuration
-
+#include <FastLED.h>
 #include <esp_now.h>
 #include <string>
 
@@ -25,6 +25,11 @@ struct DeviceInfo {
     size_t uu_id;
 };
 
+struct DirectLedPins {
+    int r_pin;
+    int g_pin;
+    int b_pin;
+};
 
 enum PacketType {
     PacketTscCommand = 1,
@@ -71,11 +76,6 @@ enum ButtonEventNumbers {
 #define ENCRYPTKEY_PEER {0xA0,0xA0,0xFF,0x00,0xFF,0xA0,0xA0,0xA0,0xFF,0x45,0xA0,0xA0,0x26,0x20,0x43,0xA0} //local master
 #define ENCRYPTKEY_NETWORK    "JACKBLACKISSTEVE" //"TOPSECRETPASSWRD" // Use the same 16-byte key on all nodes
 
-//device UUIDs (used for command addressing)
-#define DONGLE1_UUID 0
-#define JUDGE_CONTROLLER1_UUID 1
-#define BOX1_UUID 2
-
 
 //global define variables
 
@@ -99,6 +99,44 @@ const DeviceInfo g_box_1 = {
     TypeBox,
     2,
 };
+
+
+////////LED SETTINGS////////
+
+//the same pin for both divices since this must be checked at compile-time
+//pin that drives the neopixel LED strips
+#define STRIP_LED_DRIVER_PIN 16
+
+//the driver type for the LED strips
+#define DRIVER_TYPE NEOPIXEL
+
+
+
+//remote
+
+//the remote doesn't have any of these for now
+#define REMOTE_RGB_LED_COUNT 0
+
+const DirectLedPins remote_led_addresses[] =  {
+    DirectLedPins{4,-1,-1}, //0
+    DirectLedPins{25 -1,-1}, //1
+    DirectLedPins{16, -1,-1}, //2
+    DirectLedPins{26,-1,-1}, //3
+    DirectLedPins{17,-1,-1}, //4
+    DirectLedPins{12,-1,-1}, //5
+    DirectLedPins{5,-1,-1}, //6
+    DirectLedPins{13,-1,-1}, //7
+};
+
+//box
+#define BOX_RGB_LED_COUNT 120 //number neopixel-type leds within the box, addresses start where the box_led_addresses end
+//2 leds for each "ready button"
+const DirectLedPins box_led_addresses[] =  {
+    DirectLedPins{4,-1,-1}, //0
+    DirectLedPins{25,-1,-1}, //1
+};
+
+
 
 //global method (this doesn't really fit anywhere else...)
 RemoteGenericPacket assemble_response_packet(size_t device_type, size_t device_id, ResponseType response_type, const char* data) {

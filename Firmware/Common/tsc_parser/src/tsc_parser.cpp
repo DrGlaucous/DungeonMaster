@@ -73,57 +73,63 @@ void TscParser::parse_tsc(const char* tsc_string) {
         char c = *++cursor;
         ++cursor;
         switch(IS_COMMAND(a, b, c)) {
-            case TSC_SLT: {
-                //set light targets
-                if(!parse_tsc_arg_count(&cursor, end_cursor, 3, TSC_SLT)) {
-                    hit_end = true;
-                    continue;
-                }
-                break;
-            }
-            case TSC_STS: {
-                //set light transition speed
-                if(!parse_tsc_arg_count(&cursor, end_cursor, 2, TSC_STS)) {
-                    hit_end = true;
-                    continue;
-                }
-                break;
-            }
-            case TSC_SLC: {
-                //set light color
-                if(!parse_tsc_arg_count(&cursor, end_cursor, 3, TSC_SLC)) {
-                    hit_end = true;
-                    continue;
-                }
-                break;
-            }
-            case TSC_SLR: {
-                //
-                if(!parse_tsc_arg_count(&cursor, end_cursor, 0, TSC_SLR)) {
-                    hit_end = true;
-                    continue;
-                }
-                break;
-            }
-            case TSC_SLS: {
-                if(!parse_tsc_arg_count(&cursor, end_cursor, 6, TSC_SLS)) {
-                    hit_end = true;
-                    continue;
-                }
-                break;
-            }
             case TSC_TGT: {
+                //target
                 if(!parse_tsc_arg_count(&cursor, end_cursor, 1, TSC_TGT)) {
                     hit_end = true;
                     continue;
                 }
                 break;
             }
+            case TSC_SLT: {
+                //set light target
+                if(!parse_tsc_arg_count(&cursor, end_cursor, 3, TSC_SLT)) {
+                    hit_end = true;
+                    continue;
+                }
+                break;
+            }
+            case TSC_PLC: {
+                //set light transition speed
+                if(!parse_tsc_arg_count(&cursor, end_cursor, 4, TSC_PLC)) {
+                    hit_end = true;
+                    continue;
+                }
+                break;
+            }
+            case TSC_CLC: {
+                //set light color
+                if(!parse_tsc_arg_count(&cursor, end_cursor, 0, TSC_CLC)) {
+                    hit_end = true;
+                    continue;
+                }
+                break;
+            }
+            case TSC_RLI: {
+                //set light rainbow
+                if(!parse_tsc_arg_count(&cursor, end_cursor, 0, TSC_RLI)) {
+                    hit_end = true;
+                    continue;
+                }
+                break;
+            }
+            case TSC_RLT: {
+                //set light rainbow
+                if(!parse_tsc_arg_count(&cursor, end_cursor, 0, TSC_RLT)) {
+                    hit_end = true;
+                    continue;
+                }
+                break;
+            }
+            case TSC_SLR: {
+                //set light rainbow
+                if(!parse_tsc_arg_count(&cursor, end_cursor, 1, TSC_SLR)) {
+                    hit_end = true;
+                    continue;
+                }
+                break;
+            }
             //unused commands (should be processed application-side): advance cursor to next command
-            //case TSC_WAI:
-            //case TSC_PSH:
-            //case TSC_POP:
-            //case TSC_EVE:
             default: {
                 break;
             }

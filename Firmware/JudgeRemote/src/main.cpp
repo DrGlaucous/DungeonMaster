@@ -5,8 +5,11 @@
 #include <configuration.h>
 #include <tsc_parser.h>
 
+#include "light_effect_handler.h"
+#include <FastLED.h>
+
 const char key_net[] = ENCRYPTKEY_NETWORK;
-const DeviceInfo& my_id = g_box_1;
+const DeviceInfo& my_id = g_jcontroller_1;
 
 RadioNowHandler* handler;
 
@@ -27,26 +30,9 @@ void run_parse_actions() {
                 handler->send_packet(response, (char*)g_dongle_1.mac_address);
                 break;
             }
-            case TSC_STS: {
-                auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "STS: Ok");
-                handler->send_packet(response, (char*)g_dongle_1.mac_address);
-                break;
-            }
-            case TSC_SLC: {
-                auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "SLC: Ok");
-                handler->send_packet(response, (char*)g_dongle_1.mac_address);
-                break;
-            }
-            case TSC_SLR: {
-                auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "SLR: Ok");
-                handler->send_packet(response, (char*)g_dongle_1.mac_address);
-                break;
-            }
-            case TSC_SLS: {
-                auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "SLS: Ok");
-                handler->send_packet(response, (char*)g_dongle_1.mac_address);
-                break;
-            }
+            //todo: other remote-commands
+
+
             default: {
                 //error: we should not be getting this command!
                 auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "Invalid command!");
@@ -106,6 +92,7 @@ int release_array[] = {
 };
 
 
+LightEffectHandler le_handler = LightEffectHandler(0, (DirectLedPins*)remote_led_addresses, 8);
 
 void setup()
 {
@@ -125,35 +112,21 @@ void setup()
     );
 
 
-    //test
-
     //voltmeter
     pinMode(34, INPUT);
 
-    //buttons
+
+    //test
+    //buttons + leds
     for(int i = 0; i < array_size; ++i) {
         pinMode(input_array[i], INPUT_PULLUP);
-        pinMode(output_array[i], OUTPUT);
+        //pinMode(output_array[i], OUTPUT);
     }
-
-    
-    //LEDs
-    // pinMode(26, OUTPUT);
-    // pinMode(25, OUTPUT);
-    // pinMode(12, OUTPUT);
-    // pinMode(13, OUTPUT);
-    // pinMode(5, OUTPUT);
-    // pinMode(17, OUTPUT);
-    // pinMode(16, OUTPUT);
-    // pinMode(4, OUTPUT);
-
-
 
 
     Serial.println("ready");
 
 }
-
 
 void loop() {
 
@@ -164,8 +137,8 @@ void loop() {
         auto packet = handler->get_last_packet();
 
 
-        //Serial.printf("GOT RADIO PACKET\n");
-        //Serial.printf("%s\n", packet.get_data_ptr());
+        Serial.printf("GOT RADIO PACKET\n");
+        Serial.printf("%s\n", packet.get_data_ptr());
 
         switch(packet.get_packet_type()) {
             //tsc command, run TSC actions
@@ -188,14 +161,18 @@ void loop() {
         if(last_button_state_array[i] != button_state) {
             //low = on
             if(!button_state) {
-                digitalWrite(output_array[i], 1);
+                //digitalWrite(output_array[i], 1);
 
                 string response = "<" + (int)my_id.type + ':' + (int)my_id.uu_id + ':' + (int)ResponseType::ButtonStatus + ':' + press_array[i] + '\n';
                 auto packet = RemoteGenericPacket((const uint8_t*)response.c_str(), response.size(), (size_t)ResponseType::ButtonStatus);
 
-                handler->send_packet(packet, g_dongle_1.mac_address);
+                TXStatus status = handler->send_packet(packet, g_dongle_1.mac_address);
+
+                Serial.printf("%d\n", status);
+
+
             } else {
-                digitalWrite(output_array[i], 0);
+               // digitalWrite(output_array[i], 0);
             }
         }
         last_button_state_array[i] = button_state;
@@ -207,12 +184,6 @@ void loop() {
 
 
 }
-
-
-
-
-
-
 
 
 
