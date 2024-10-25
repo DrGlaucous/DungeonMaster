@@ -1,12 +1,12 @@
 
 #include <Arduino.h>
 
+#include <Bounce2.h> 
 #include <radio_now_handler.h>
 #include <configuration.h>
 #include <tsc_parser.h>
+#include <light_effect_handler.h>
 
-#include "light_effect_handler.h"
-#include <FastLED.h>
 
 const char key_net[] = ENCRYPTKEY_NETWORK;
 const DeviceInfo& my_id = g_jcontroller_1;
@@ -15,34 +15,6 @@ RadioNowHandler* handler;
 
 
 TscParser parser;
-
-
-//run actions based on what TSC commands we get. This is different for each device type
-void run_parse_actions() {
-    //run actions based on gotten commands
-    TscCommand command;
-    while(parser.pop_tsc_command(command)) {
-
-        switch(command.type) {
-            case TSC_SLT: {
-                //feedback that the command succeeded
-                auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "SLT: Ok");
-                handler->send_packet(response, (char*)g_dongle_1.mac_address);
-                break;
-            }
-            //todo: other remote-commands
-
-
-            default: {
-                //error: we should not be getting this command!
-                auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "Invalid command!");
-                handler->send_packet(response, (char*)g_dongle_1.mac_address);
-
-                break;
-            }
-        }
-    }
-}
 
 /*
 
@@ -70,6 +42,10 @@ int array_size = 8;
 int input_array[] = {19, 32, 21, 33, 22, 27, 23, 14};
 int output_array[] = {4, 25, 16, 26, 17, 12, 5, 13};
 int last_button_state_array[] = {0,0,0,0,0,0,0,0};
+
+Bounce2::Button button_array[8] = {};
+
+//events to press and release with each button
 int press_array[] = {
     ButtonAActive,
     ButtonBActive,
@@ -92,12 +68,61 @@ int release_array[] = {
 };
 
 
-LightEffectHandler le_handler = LightEffectHandler(0, (DirectLedPins*)remote_led_addresses, 8);
+//LightEffectHandler le_handler = LightEffectHandler(0, (const DirectLedPins*)remote_led_addresses, 8);
+
+//test for led strip
+LightEffectHandler* le_handler;// = LightEffectHandler(8, NULL, 0);
+
+unsigned long last_time_millis = 0;
+
+
+//run actions based on what TSC commands we get. This is different for each device type
+void run_parse_actions() {
+    //run actions based on gotten commands
+    TscCommand command;
+    while(parser.pop_tsc_command(command)) {
+
+        switch(command.type) {
+            case TSC_SLT:
+            case TSC_PLC:
+            case TSC_CLC:           
+            case TSC_RLI:
+            case TSC_RLT:
+            case TSC_SLR: {
+
+                le_handler->parse_command(command);
+
+                //feedback that the command succeeded
+                auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "GOT Command: Ok");
+                handler->send_packet(response, (char*)g_dongle_1.mac_address);
+                break;
+            }
+
+            //todo: other remote-commands
+            default: {
+                //error: we should not be getting this command!
+                auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "Command not valid for this device!");
+                handler->send_packet(response, (char*)g_dongle_1.mac_address);
+
+                break;
+            }
+        }
+    }
+}
+
 
 void setup()
 {
 
     Serial.begin(115200);
+
+
+    //config for box LEDs
+    //le_handler = new LightEffectHandler(BOX_RGB_LED_COUNT, (const DirectLedPins*)box_led_addresses, sizeof(box_led_addresses) / sizeof(DirectLedPins));
+
+    //config for remote LEDs
+    le_handler = new LightEffectHandler(REMOTE_RGB_LED_COUNT, (const DirectLedPins*)remote_led_addresses, sizeof(remote_led_addresses) / sizeof(DirectLedPins));
+
 
     handler = new RadioNowHandler(
         NETWORKID,
@@ -111,18 +136,22 @@ void setup()
         g_dongle_1.local_master_key
     );
 
-
     //voltmeter
     pinMode(34, INPUT);
-
-
+    
     //test
     //buttons + leds
     for(int i = 0; i < array_size; ++i) {
-        pinMode(input_array[i], INPUT_PULLUP);
+        //pinMode(input_array[i], INPUT_PULLUP);
         //pinMode(output_array[i], OUTPUT);
+
+        button_array[i].attach(input_array[i], INPUT_PULLUP);
+        button_array[i].interval(20);
+        button_array[i].setPressedState(0);
     }
 
+
+    last_time_millis = millis();
 
     Serial.println("ready");
 
@@ -130,14 +159,13 @@ void setup()
 
 void loop() {
 
-
     //check for packets gotten from dongle
     if(handler->check_for_packet() == RX_SUCCESS) {
 
         auto packet = handler->get_last_packet();
 
 
-        Serial.printf("GOT RADIO PACKET\n");
+        //Serial.printf("GOT RADIO PACKET\n");
         Serial.printf("%s\n", packet.get_data_ptr());
 
         switch(packet.get_packet_type()) {
@@ -153,35 +181,34 @@ void loop() {
 
     }
 
-
     for(int i = 0; i < array_size; ++i) {
-        int button_state = digitalRead(input_array[i]);
-
-        //only do things on state change
-        if(last_button_state_array[i] != button_state) {
-            //low = on
-            if(!button_state) {
-                //digitalWrite(output_array[i], 1);
-
-                string response = "<" + (int)my_id.type + ':' + (int)my_id.uu_id + ':' + (int)ResponseType::ButtonStatus + ':' + press_array[i] + '\n';
-                auto packet = RemoteGenericPacket((const uint8_t*)response.c_str(), response.size(), (size_t)ResponseType::ButtonStatus);
-
-                TXStatus status = handler->send_packet(packet, g_dongle_1.mac_address);
-
-                Serial.printf("%d\n", status);
 
 
+        button_array[i].update();
+
+        if(button_array[i].changed()) {
+
+            int event_num;
+            if(button_array[i].pressed()) {
+                event_num = press_array[i];
             } else {
-               // digitalWrite(output_array[i], 0);
+                event_num = release_array[i];
             }
-        }
-        last_button_state_array[i] = button_state;
-        
 
+            auto better_packet = assemble_response_packet(my_id.type, my_id.uu_id, ResponseType::ButtonStatus, std::to_string(event_num).c_str());
+            TXStatus status = handler->send_packet(better_packet, g_dongle_1.mac_address);
+            Serial.printf("%s\n", (char*)better_packet.get_data_ptr());
+        }
 
 
     }
 
+    auto time_millis = millis();
+
+    le_handler->tick(time_millis - last_time_millis);
+    le_handler->set_out();
+
+    last_time_millis = time_millis;
 
 }
 

@@ -26,6 +26,11 @@ struct ColorStep {
     uint32_t time_ms;
 };
 
+enum LightPointType {
+    TypeDirect,
+    TypeStrip,
+};
+
 //A single light with R, G, and B componets
 class LightPoint {
     
@@ -47,10 +52,15 @@ class LightPoint {
             return;
         }
 
+        //Serial.printf("Tick light: %d\n", id);
+
         curr_time += delta_t_ms;
 
         //set to next target
         if(curr_time >= color_steps[current_target].time_ms) {
+            
+            //Serial.printf("Q1\n");
+            
             curr_time -= color_steps[current_target].time_ms;
 
             //increment target index
@@ -59,6 +69,8 @@ class LightPoint {
             if(current_target >= color_steps.size()) {
                 current_target -= color_steps.size();
             }
+
+            //Serial.printf("R\n");
 
             //cache last color
             const byte* last_col = color_steps[last_target].rgb;
@@ -72,6 +84,9 @@ class LightPoint {
         rgb[0] = map(curr_time, 0, color_steps[current_target].time_ms, last_rgb[0], next_rgb[0]);
         rgb[1] = map(curr_time, 0, color_steps[current_target].time_ms, last_rgb[1], next_rgb[1]);
         rgb[2] = map(curr_time, 0, color_steps[current_target].time_ms, last_rgb[2], next_rgb[2]);
+
+
+        //Serial.printf("Col: %d, %d, %d\n", rgb[0], rgb[1], rgb[2]);
 
     }
 
@@ -116,6 +131,8 @@ class LightPoint {
         return id;
     }
 
+    virtual LightPointType get_type() = 0;
+
     private:
 
     //id of the light, used for indexing
@@ -125,16 +142,16 @@ class LightPoint {
     vector<ColorStep> color_steps;
 
     //index of the current color to hit
-    size_t current_target;
+    size_t current_target = 0;
 
     //where we are between 0 and the end time (from color_steps)
-    uint32_t curr_time;
+    uint32_t curr_time = 0;
 
     //last color that was hit, used to map between old and new colors
-    byte last_rgb[3];
+    byte last_rgb[3] = {0,0,0};
 
     //output color to be written to the corresponding LED
-    byte rgb[3];
+    byte rgb[3] = {0,0,0};
 
 };
 
@@ -145,13 +162,17 @@ class DirectLed : public LightPoint {
 
     DirectLed(int id, int r_out, int g_out, int b_out): LightPoint(id), r_out(r_out), g_out(g_out), b_out(b_out) {
     
+        //Serial.printf("Setup id: %d\n", id);
         if(r_out >= 0) {
+            //Serial.printf("R: %d\n", r_out);
             pinMode(r_out, OUTPUT);
         }
         if(g_out >= 0) {
+            //Serial.printf("G: %d\n", g_out);
             pinMode(g_out, OUTPUT);
         }
         if(b_out >= 0) {
+            //Serial.printf("B: %d\n", b_out);
             pinMode(b_out, OUTPUT);
         }
     
@@ -161,11 +182,20 @@ class DirectLed : public LightPoint {
     void set_out() {
 
         const byte* rgb_ptr = get_rgb();
-
-        digitalWrite(r_out, rgb_ptr[0]);
-        digitalWrite(g_out, rgb_ptr[1]);
-        digitalWrite(b_out, rgb_ptr[2]);
+        
+        if(r_out >= 0) {
+            analogWrite(r_out, rgb_ptr[0]);
+        }
+        if(g_out >= 0) {
+            analogWrite(g_out, rgb_ptr[1]);
+        }
+        if(b_out >= 0) {
+            analogWrite(b_out, rgb_ptr[2]);
+        }
+        
     }
+
+    LightPointType get_type() { return LightPointType::TypeDirect; }
 
     private:
 
@@ -194,6 +224,8 @@ class StripLed : public LightPoint {
         color_ref->b = rgb_ptr[2];
     }
 
+    LightPointType get_type() { return LightPointType::TypeStrip; }
+
     private:
 
     //refrence to a point in a CRGB array which corresponds to this light
@@ -209,7 +241,7 @@ class LightEffectHandler {
     public:
 
     //initialize with a list of both strip leds and direct leds
-    LightEffectHandler(int strip_led_count, DirectLedPins* direct_led_array, int direct_led_count) {
+    LightEffectHandler(int strip_led_count, const DirectLedPins* direct_led_array, int direct_led_count) {
 
         int total_count = strip_led_count + direct_led_count;
         int id = 0; //address index since strip lights will be addressed after direct lights
@@ -236,9 +268,9 @@ class LightEffectHandler {
         //todo: make the protocol here dynamic...
         //also note: the pin number here must also be a constant... fun traits....
         if(strip_led_count > 0) {
-            fast_led_colors.reserve(strip_led_count);
+            fast_led_colors.resize(strip_led_count);
 
-            FastLED.addLeds<DRIVER_TYPE, STRIP_LED_DRIVER_PIN>(&fast_led_colors[0], strip_led_count);
+            FastLED.addLeds<NEOPIXEL, STRIP_LED_DRIVER_PIN>(&fast_led_colors[0], strip_led_count);
 
             for(int i = 0; i < strip_led_count; ++i) {
                 LightPoint* led = new StripLed(id, &fast_led_colors[i]);
@@ -261,16 +293,30 @@ class LightEffectHandler {
     }
 
 
+    //tick each led's color
     void tick(uint32_t delta_t_ms) {
-
         for(int i = 0; i < point_list.size(); ++i) {
             point_list[i]->tick(delta_t_ms);
         }
     }
 
+    //applies calculated colors to output
+    void set_out() {
+
+        for(int i = 0; i < point_list.size(); ++i) {
+            point_list[i]->set_out();
+        }
+
+        //if we have strip lights, write them all out
+        if(fast_led_colors.size() > 0) {
+            FastLED.show();
+        }
+
+    }
+
 
     //calls actions on lights based on command
-    void parse_command(TscCommand command) {
+    void parse_command(TscCommand &command) {
 
         switch(command.type) {
             case TSC_SLT: {
@@ -292,6 +338,8 @@ class LightEffectHandler {
                     step = 1;
                 }
 
+                Serial.printf("RAN: SLT\n");
+
                 break;
             }
 
@@ -303,7 +351,7 @@ class LightEffectHandler {
 
                 //set the color of lights within the proper ID range
                 for(int i = 0; i < point_list.size(); ++i) {
-
+                    
                     if(is_within_range(point_list[i]->get_id())) {
                         //set parameter
 
@@ -313,13 +361,17 @@ class LightEffectHandler {
                                 (byte)clamp(command.tsc_args[1], 0, 255),
                                 (byte)clamp(command.tsc_args[2], 0, 255),
                             },
-                            command.tsc_args[3]
+                            command.tsc_args[3] < 1 ? 1 : (uint32_t)command.tsc_args[3] //prevent 0-delta lighting functions
                         };
+
                         point_list[i]->push_color_step(new_color);
                     }
 
 
                 }
+
+                Serial.printf("RAN: PLC\n");
+
                 break;
             }        
             case TSC_CLC: {
@@ -383,10 +435,6 @@ class LightEffectHandler {
 
     }
 
-
-    void select_address_range(int min, int max) {
-
-    }
 
 
     private:

@@ -1,0 +1,12 @@
+{
+  "name": "light_effect_handler",
+  "version": "0.0.1",
+  "description": "Abstraction layer for leds",
+  "frameworks": "arduino",
+  "platforms": "espressif32",
+  "dependencies":
+  {
+    "configuration": "symlink://../Common/tsc_parser",
+    "fastled/FastLED": "^3.8.0"
+  }
+}

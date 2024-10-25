@@ -51,7 +51,7 @@ void run_parse_actions() {
                 //if it was addressed to us, don't try to send it
                 if((char*)current_device_target->mac_address == my_id.mac_address) {
                     //send an error directly back to the serial terminal
-                    auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "Invalid command!");
+                    auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "Command not valid for this device!");
                     Serial.printf("%s\n", response.get_data_ptr());
                 } else {
 
@@ -104,6 +104,14 @@ void loop() {
 
         //parse the commands
         parser.parse_tsc(byte_holder);
+
+        //response print if what was sent yielded 0 valid commands:
+        if(parser.get_queue_length() == 0) {
+
+            auto response = assemble_response_packet(my_id.type, my_id.uu_id, PacketGetOk, "Warning: No commands were successfully compiled\n");
+            Serial.printf("%s\n", response.get_data_ptr());
+
+        }
 
         //Debug
         //Serial.printf("GOT: %s\n", byte_holder);

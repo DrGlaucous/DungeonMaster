@@ -1,7 +1,6 @@
 #pragma once
 
 //Configuration
-#include <FastLED.h>
 #include <esp_now.h>
 #include <string>
 
@@ -62,8 +61,13 @@ enum ButtonEventNumbers {
     ButtonHInactive = 2007,
 
 
-    BlueReadyInactive = 2007,
-    ArenaDoorInactive = 2008,
+    BlueReadyActive = 1008,
+    RedReadyActive = 1009,
+    BlueReadyInactive = 2008,
+    RedReadyInactive = 2009,
+
+    ArenaDoorActive = 1010,
+    ArenaDoorInactive = 2010,
 };
 
 ////////RADIO SETTINGS////////
@@ -105,10 +109,10 @@ const DeviceInfo g_box_1 = {
 
 //the same pin for both divices since this must be checked at compile-time
 //pin that drives the neopixel LED strips
-#define STRIP_LED_DRIVER_PIN 16
+#define STRIP_LED_DRIVER_PIN 18
 
 //the driver type for the LED strips
-#define DRIVER_TYPE NEOPIXEL
+//#define DRIVER_TYPE NEOPIXEL
 
 
 
@@ -119,7 +123,7 @@ const DeviceInfo g_box_1 = {
 
 const DirectLedPins remote_led_addresses[] =  {
     DirectLedPins{4,-1,-1}, //0
-    DirectLedPins{25 -1,-1}, //1
+    DirectLedPins{25, -1,-1}, //1
     DirectLedPins{16, -1,-1}, //2
     DirectLedPins{26,-1,-1}, //3
     DirectLedPins{17,-1,-1}, //4
@@ -129,7 +133,7 @@ const DirectLedPins remote_led_addresses[] =  {
 };
 
 //box
-#define BOX_RGB_LED_COUNT 120 //number neopixel-type leds within the box, addresses start where the box_led_addresses end
+#define BOX_RGB_LED_COUNT 50 //number neopixel-type leds within the box, addresses start where the box_led_addresses end
 //2 leds for each "ready button"
 const DirectLedPins box_led_addresses[] =  {
     DirectLedPins{4,-1,-1}, //0
@@ -139,6 +143,7 @@ const DirectLedPins box_led_addresses[] =  {
 
 
 //global method (this doesn't really fit anywhere else...)
+//note: data should be null-terminated!
 RemoteGenericPacket assemble_response_packet(size_t device_type, size_t device_id, ResponseType response_type, const char* data) {
 
     string payload = "<";

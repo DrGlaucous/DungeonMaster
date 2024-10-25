@@ -1,136 +1,59 @@
-#0001
-<MSGBegin wait
-<WAI0000:0010
-<MSGEnd wait, goto eve2
-<EVE0002
-<END
 
 
-#0002
-<MSGEvent 2
-<PSH0003
-<END
 
 
-#0003
-<MSGEvent 3
-<POP
 
 
-//stopwatch demo
-#0300
-<SWG<END
-#0301
-<SWH<END
-#0302
-<SWR<END
 
-
-//test countdown event
-#0500
-<KEY
-<MSG5
-<WAI0001:0000
-<MSG4
-<WAI0001:0000
-<MSG3
-<WAI0001:0000
-<MSG2
-<WAI0001:0000
-<MSG1
-<WAI0001:0000
-<MSGGO!!!
-<FRE<POP
-
-
+///////////////////////
 //button DOWN events
-#1000
-<EVE0300
-<END
+#1000 //start match btn
 
-#1001
-<EVE0301
-<END
+#1001 //pause-play
 
-#1002
-<EVE0302
-<END
+#1002 //end match
 
-//TEST: show video
-#1003
-<AVH0000
-<AVL0000:HeyVSauce,MichaelHere(GreenScreen).mp4$
-<AVY0000
-<AVV0000
+#1003 //stopwatch
 
-//<MSG1003
-<END
+#1004 //red wins
+
+#1005 //blue wins
+
+#1006 //red ready
+
+#1007 //blue ready
+
+#1008 //arena door
 
 
-#1004
-<AVH0000
-<MSG1004
-<END
 
-#1005
-<PSH0500
-<MSG1005
-<END
-
-#1006
-<MSG1006
-<END
-
-#1007
-<MSG1007
-<END
-
-#1008
-<MSG1008
-<END
-
-
+///////////////////////
 //button UP events
-#2000
-<MSG2000
+#2000 //start match
+<EVE0901
+#2001 //pause-play
+<EVE0901
+#2002 //end match
+<EVE0901
+#2003 //stopwatch
+<EVE0901
+#2004 //red wins
+<EVE0901
+#2005 //blue wins
+<EVE0901
+#2006 //red ready
+<END
+#2007 //blue ready
+<EVE0901
+#2008 //arena door
+<PSH4011
 <END
 
-#2001
-<MSG2001
-<END
 
-#2002
-<MSG2002
-<END
 
-//test: stop video
-#2003
-<AVH
-<AVS0000
 
-//<MSG2003
-<END
 
-#2004
-<AVV0000
-<MSG2004
-<END
 
-#2005
-<MSG2005
-<END
-
-#2006
-<MSG2006
-<END
-
-#2007
-<MSG2007
-<END
-
-#2008
-<MSG2008
-<END
 
 
 
