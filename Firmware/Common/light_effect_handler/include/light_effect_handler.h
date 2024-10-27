@@ -57,7 +57,7 @@ class LightPoint {
         curr_time += delta_t_ms;
 
         //set to next target
-        if(curr_time >= color_steps[current_target].time_ms) {
+        while(curr_time >= color_steps[current_target].time_ms) {
             
             //Serial.printf("Q1\n");
             
@@ -87,6 +87,7 @@ class LightPoint {
 
 
         //Serial.printf("Col: %d, %d, %d\n", rgb[0], rgb[1], rgb[2]);
+        //Serial.printf("%d | %d | %d \n", rgb[0], rgb[1], rgb[2]);
 
     }
 
@@ -182,7 +183,7 @@ class DirectLed : public LightPoint {
     void set_out() {
 
         const byte* rgb_ptr = get_rgb();
-        
+
         if(r_out >= 0) {
             analogWrite(r_out, rgb_ptr[0]);
         }
@@ -381,6 +382,9 @@ class LightEffectHandler {
                         point_list[i]->clear_color_steps();
                     }
                 }
+
+                Serial.printf("RAN: CLC\n");                
+                
                 break;
             }
             case TSC_RLI: {
@@ -425,8 +429,12 @@ class LightEffectHandler {
                     if(is_within_range(point_list[i]->get_id())) {
                         int time_offset = map(current_idx, 0, selected_count, 0, time_ms);
                         point_list[i]->tick(time_offset);
+                        ++current_idx;
+                        //Serial.printf("TO: %d CI: %d, SC: %d, TM: %d\n", time_offset, current_idx, selected_count, time_ms);
                     }
                 }
+
+                Serial.printf("RAN: SLR\n");   
 
                 break;
             }

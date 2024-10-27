@@ -41,10 +41,10 @@ vector<uint8_t> TscCommand::stringify_command() {
 
 TscParser::TscParser() {}
 
-void TscParser::parse_tsc(const char* tsc_string) {
+const char* TscParser::parse_tsc(const char* tsc_string) {
 
     if(tsc_string == NULL) {
-        return;
+        return NULL;
     }
 
     auto cursor = tsc_string;
@@ -60,6 +60,16 @@ void TscParser::parse_tsc(const char* tsc_string) {
 
     //run until command is empty
     while(!hit_end) {
+
+        //iterate until we reach the next command or the end of the string buffer
+        while(*cursor != '<') {
+            //halt parsing if we hit a null terminator
+            if(*cursor == '\0') {
+                hit_end = true;
+                break;    
+            }
+            ++cursor;
+        }
 
         //check for null terminator mid-command
         if(cursor + 4 > end_cursor) {
@@ -137,18 +147,11 @@ void TscParser::parse_tsc(const char* tsc_string) {
 
         }
 
-        //iterate until we reach the next command or the end of the string buffer
-        while(*cursor != '<') {
-            //halt parsing if we hit a null terminator
-            if(*cursor == '\0') {
-                hit_end = true;
-                break;    
-            }
-            ++cursor;
-        }
 
     }
 
+    //return the last point we were able to parse
+    return cursor;
 
 }
 

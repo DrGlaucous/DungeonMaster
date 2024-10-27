@@ -205,10 +205,14 @@ void loop() {
 
     auto time_millis = millis();
 
-    le_handler->tick(time_millis - last_time_millis);
-    le_handler->set_out();
+    auto delta = time_millis - last_time_millis;
 
-    last_time_millis = time_millis;
+    //only do this a minimum of 10 ms because setting analogWrite too fast results in nothing actually being written
+    if(delta > 10) {
+        le_handler->tick(delta);
+        le_handler->set_out();
+        last_time_millis = time_millis;
+    }
 
 }
 

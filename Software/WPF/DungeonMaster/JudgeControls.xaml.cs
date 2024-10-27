@@ -55,34 +55,34 @@ namespace DungeonMaster
 
             switch (button_name)
             {
-                case "StartMatchButton":
+                case "A":
                     {
-                        button_id = is_pressed ? ButtonEventNumbers.StartMatchActive : ButtonEventNumbers.StartMatchInactive;
+                        button_id = is_pressed ? ButtonEventNumbers.Ad : ButtonEventNumbers.Au;
                         break;
                     }
-                case "StopwatchButton":
+                case "B":
                     {
-                        button_id = is_pressed ? ButtonEventNumbers.StopwatchActive : ButtonEventNumbers.StopwatchInactive;
+                        button_id = is_pressed ? ButtonEventNumbers.Bd : ButtonEventNumbers.Bu;
                         break;
                     }
-                case "PausePlayButton":
+                case "C":
                     {
-                        button_id = is_pressed ? ButtonEventNumbers.PausePlayActive : ButtonEventNumbers.PausePlayInactive;
+                        button_id = is_pressed ? ButtonEventNumbers.Cd : ButtonEventNumbers.Cu;
                         break;
                     }
-                case "RedWinsButton":
+                case "D":
                     {
-                        button_id = is_pressed ? ButtonEventNumbers.RedWinsActive : ButtonEventNumbers.RedWinsInactive;
+                        button_id = is_pressed ? ButtonEventNumbers.Dd : ButtonEventNumbers.Du;
                         break;
                     }
-                case "BlueWinsButton":
+                case "E":
                     {
-                        button_id = is_pressed ? ButtonEventNumbers.BlueWinsActive : ButtonEventNumbers.BlueWinsInactive;
+                        button_id = is_pressed ? ButtonEventNumbers.Ed : ButtonEventNumbers.Eu;
                         break;
                     }
-                case "EndMatchButton":
+                case "F":
                     {
-                        button_id = is_pressed ? ButtonEventNumbers.EndMatchActive : ButtonEventNumbers.EndMatchInactive;
+                        button_id = is_pressed ? ButtonEventNumbers.Fd : ButtonEventNumbers.Fu;
                         break;
                     }
                 default: { return; }

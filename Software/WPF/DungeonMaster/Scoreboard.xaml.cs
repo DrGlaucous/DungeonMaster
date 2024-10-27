@@ -55,6 +55,7 @@ namespace DungeonMaster
             StopStopwatch, //stop stopwatch countup
             ResetStopwatch, //reset stopwatch to 0
             AddTimeMain, //add more time to main timer
+            ResetMain, //resets main time
 
             AddTimerEvent, //add an event to run at a certain time
             RemoveTimerEvent, //remove a time-triggered event
@@ -203,6 +204,13 @@ namespace DungeonMaster
         //wraps the methods above into a single method that can be invoked from the TSC engine
         public void RunAction(ScoreboardAction action, params object[] list)
         {
+            if (!Dispatcher.CheckAccess())
+            {
+                //Dispatcher.Invoke(() => RunAction(action, list));
+                Dispatcher.Invoke(new ScoreboardActionDelegate(RunAction), action, list);
+                return;
+            }
+
             switch (action)
             {
                 default: { break; }
@@ -240,6 +248,15 @@ namespace DungeonMaster
                         {
                             var arg1 = (TimeSpan)list[0];
                             timer_major.AddTime(arg1);
+                        }
+                        catch { }
+                        break;
+                    }
+                case ScoreboardAction.ResetMain:
+                    {
+                        try
+                        {
+                            timer_major.Reset();
                         }
                         catch { }
                         break;

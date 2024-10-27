@@ -76,7 +76,7 @@ class TscParser {
 
     //take c string refrence and fill the command queue with processed commands
     //note: string MUST be null-terminated, this does not process comments!
-    void parse_tsc(const char* tsc_string);
+    const char* parse_tsc(const char* tsc_string);
 
     int get_queue_length();
 

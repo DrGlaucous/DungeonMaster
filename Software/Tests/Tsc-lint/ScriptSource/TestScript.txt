@@ -1,0 +1,383 @@
+//null event
+#0000
+<END
+
+
+//flags
+//flag 0100: match playing
+//flag 0110: main timer running (can pause mid-round)
+
+
+
+
+
+//main events
+
+
+//NOTE:::::
+//waits are a bodge for now... we need to fix this later
+
+//rev arena
+#0100
+<KEY
+<MSGLoad
+<FLJ0100:0000//match is running, don't try to rev again
+<FLC//reset all flags
+<AVU0000
+<AVL0000:data/Audio/arena-charge.mp3$
+<AVS0000//stop: make sure buffer is reset
+<MSGWait
+<WAI0000:0300//wait to make sure the media is loaded
+<MSGEnd Wait
+<AVY0000//begin playback
+//begin making lights go
+<TGT0002//target box
+<PSH3000//select all box lights
+<PSH4000//reset light programs
+<WAI0000:0010
+
+/////flash and fade
+<PLC0255:0000:0000:0010
+<PLC0000:0000:0000:0490
+<PLC0000:0000:0000:1000
+<WAI0000:1500<PSH4000
+/////break, spin colors
+
+<PSH3002//select just evens
+<PLC0255:0255:0000:0001
+<PLC0255:0255:0000:0100
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0100
+<WAI0001:0000
+
+<PSH3001//select just odds
+<PLC0255:0000:0000:0001
+<PLC0255:0000:0000:0200
+<PLC0000:0255:0000:0001
+<PLC0000:0255:0000:0200
+<PLC0000:0000:0255:0001
+<PLC0000:0000:0255:0200
+<WAI0000:0010
+<SLR0400
+<WAI0001:0000
+
+<PSH3002//select just evens
+<PSH4000//clear old
+<PLC0255:0255:0255:0001
+<PLC0255:0255:0255:0050
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0050
+<SLR0117
+<WAI0001:0000
+
+
+<WAI0000:0800
+
+<PSH3000//back to all lights
+<PSH4000<WAI0000:0010
+<PLC0255:0255:0255:0100 //fullbright, then all black
+<PLC0000:0000:0000:0100
+<PLC0000:0000:0000:1000
+<PLC0255:0255:0255:2000 //slowly fade back in
+<WAI0000:3100
+<CLC
+<PLC0255:0255:0255:1000
+<FRE<END
+
+
+
+//match startoff
+#0110
+<KEY
+<FLJ0100:0000//match is running, don't try to start again
+<MSGLoad
+//<FL+0100
+//<FL+0110
+
+//add countdown events
+<TEC
+<TEU0200:0060:0000//minute
+<TEU0201:0000:0000//end
+
+
+<AVU0000
+<AVH0000
+<AVL0000:data/Video/Countdown321.mp4$
+<AVS0000//stop: make sure buffer is reset
+<MSGWait
+<WAI0001:0000//wait to make sure the media is loaded
+<MSGEnd Wait
+<AVV0000
+<AVY0000//begin playback
+<TGT0002//target box
+<PSH3000//select just evens
+<PSH4000//clear old
+<PLC0000:0255:0000:0001
+<PLC0255:0255:0255:1000
+<WAI0004:0000
+<PSH4000
+<PLC0255:0255:0255:0001
+<PLC0255:0255:0255:1000
+<TIG
+<END
+
+//emergency white
+#0150
+<TGT0002//target box
+<PSH3000//select all box lights
+<PSH4000//reset light programs
+<PLC0255:0255:0255:0001
+<PLC0255:0255:0255:1000
+<TIH
+<END
+
+///////////////////////////////
+
+//one minute left
+#0200
+<MSGONE MINUTE
+<AVL0000:data/Audio/one-minute.mp3$
+<AVS0000
+<AVY0000//begin playback
+<END
+
+//match END
+#0201
+<TIH<TIR
+<MSGEND
+<MSGONE MINUTE
+<AVL0000:data/Audio/buzzer.mp3$
+<AVS0000
+<AVY0000//begin playback
+<END
+
+
+/////////////////////////////////
+
+
+//test script, ripple remote lights
+#0500
+<MSGAdd Glow
+<TGT0001//target remote
+<SLT0000:0008:0001
+<CLC<RLI<RLT//reset old sequence
+<PSH4003//heartbeat sequence
+<END
+
+#0501
+<MSGRemove Glow
+<TGT0001//target remote
+<SLT0000:0008:0001
+<CLC
+<PLC0000:0000:0000:0001
+<END
+
+
+#0502
+<MSGAdd Main Light Glow
+<TGT0002//target remote
+<PSH3002//all evens
+<CLC<RLI<RLT//reset old sequence
+<PSH4003//heartbeat sequence
+<SLR1500
+<END
+
+#0503
+<MSGRemove Main Light Glow
+<TGT0002//target box
+<SLT0002:0052:0001//all lights in box
+<CLC
+<PLC0000:0000:0000:0001
+<END
+
+
+
+
+
+
+
+
+//button down
+#0900
+<MSGButton DOWN
+<END
+//button up
+#0901
+<MSGButton UP
+<END
+
+///////////////////////
+//button DOWN events
+
+//remote buttons
+#1000 //
+<EVE0100//goto arena rev
+<EVE0900
+#1001 //
+<EVE0110//goto start match
+<EVE0900
+#1002 //KO
+<EVE0201
+<EVE0900
+#1003 //pin timer
+<SWR<SWG
+<END
+#1004 //pause timer
+<TIH
+<END
+#1005 //resume timer
+<TIG
+<END
+#1006 //red ready
+<EVE0150//goto make white
+<EVE0900
+#1007 //blue ready
+//hot-reload script
+<MSGReloading TSC
+<TRA0000:Script.tsc.txt$
+<EVE0900
+#1008 //arena door
+<EVE0900
+#1009
+<EVE0900
+#1010
+<EVE0900
+
+///////////////////////
+//button UP events
+
+
+#2000 //start match
+<EVE0901
+#2001 //pause-play
+<EVE0901
+#2002 //end match
+<EVE0901
+#2003 //stopwatch
+<SWH
+<END
+<EVE0901
+#2004 //red wins
+<EVE0901
+#2005 //blue wins
+<EVE0901
+#2006 //red ready
+<EVE0901
+#2007 //blue ready
+<EVE0901
+#2008 //arena door
+<EVE0901
+#2009 //x
+<EVE0901
+#2010 //x
+<EVE0901
+
+
+
+///////////////////////
+//light helpers
+
+
+
+////////////////////////////selection helpers
+
+//select all RGB lights in box strip
+#3000
+<SLT0002:0052:0001
+<POP
+
+//select all odds
+#3001
+<SLT0003:0052:0002
+<POP
+
+//select all evens
+#3002
+<SLT0002:0052:0002
+<POP
+
+//12-13-12-13
+//select edge 1
+#3010
+<SLT0002:0014:0001
+<POP
+
+//edge 2
+#3011
+<SLT0014:0027:0001
+<POP
+
+//edge 3
+#3012
+<SLT0027:0039:0001
+<POP
+
+//edge 4
+#3013
+<SLT0039:0052:0001
+<POP
+
+
+///////////////////////action helpers
+
+//reset all parameters
+#4000
+<CLC<RLI<RLT
+<POP
+
+//push rainbow sequence, 3 seconds
+#4001
+<PLC0255:0000:0000:1000
+<PLC0000:0255:0000:1000
+<PLC0000:0000:0255:1000
+<POP
+
+//50% duty cycle between off and white, 0.5 seconds each
+#4002
+<PLC0255:0255:0255:0001
+<PLC0255:0255:0255:0500
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0500
+<POP
+
+//red "heartbeat", 1 second
+#4003
+<PLC0255:0000:0000:0001
+<PLC0255:0000:0000:0100
+
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0100
+
+<PLC0255:0000:0000:0001
+<PLC0255:0000:0000:0100
+
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:1000
+
+<POP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

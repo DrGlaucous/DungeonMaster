@@ -131,7 +131,8 @@ namespace DungeonMaster
 
             //filter out comments
             //see <https://stackoverflow.com/questions/12089630/regular-expression-for-filter-c-comments>
-            script = Regex.Replace(script, "/(\\/\\*(?<multiline>[\\s\\S]*?)\\*\\/)|(\\/\\/(?<singleline>[\\s\\S]*?)[\\n\\r]?$)/mg", "");
+            var raw_pattern = @"(\/\*[\S\s]*?\*\/)|\/\/[\S\s]*?[\n\r]";
+            script = Regex.Replace(script, raw_pattern, "");
 
             //split by events (first index always contains garbage data or an empty string)
             string[] split_strings = Regex.Split(script, "(?=#....)");
@@ -456,39 +457,44 @@ namespace DungeonMaster
                                         ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.StopMain);
                                         break;
                                     }
-                                case "TIA": //TImer Add <TIAxxxx:yyyy add xxxx minutes and yyyy seconds to the current time 
+                                case "TIA": //TImer Add <TIAxxxx:yyyy add xxxx seconds and yyyy milliseconds to the current time 
                                     {
                                         try
                                         {
-                                            int mins = GetNumberFromString(command.arguments[0]);
-                                            int secs = GetNumberFromString(command.arguments[1]);
-                                            var total = TimeSpan.FromSeconds((mins * 60 + secs));
+                                            int s = GetNumberFromString(command.arguments[0]);
+                                            int ms = GetNumberFromString(command.arguments[1]);
+                                            var total = TimeSpan.FromMilliseconds((s * 1000 + ms));
                                             ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMain, total);
                                         }
                                         catch { }
                                         break;
                                     }
-                                case "TIS": //TImer Sub <TISxxxx:yyyy subtract xxxx minutes and yyyy seconds from the current time 
+                                case "TIS": //TImer Sub <TISxxxx:yyyy subtract xxxx seconds and yyyy milliseconds from the current time 
                                     {
                                         try
                                         {
-                                            int mins = GetNumberFromString(command.arguments[0]);
-                                            int secs = GetNumberFromString(command.arguments[1]);
-                                            var total = TimeSpan.FromSeconds(-(mins * 60 + secs));
+                                            int s = GetNumberFromString(command.arguments[0]);
+                                            int ms = GetNumberFromString(command.arguments[1]);
+                                            var total = TimeSpan.FromSeconds(-(s * 1000 + ms));
                                             ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMain, total);
                                         }
                                         catch { }
                                         break;
                                     }
-                                case "TEU": //Timer Event pUsh <TEUxxxx:yyyy:zzzz set event xxxx to be run when the timer hits yyyy minutes, zzzz seconds
+                                case "TIR": //TImer Reset, reset the main scoreboard timer to 0
+                                    {
+                                        ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.ResetMain);
+                                        break;
+                                    }
+                                case "TEU": //Timer Event pUsh <TEUxxxx:yyyy:zzzz set event xxxx to be run when the timer hits yyyy seconds, zzzz ms
                                     {
                                         try
                                         {
                                             int event_num = GetNumberFromString(command.arguments[0]);
-                                            int mins = GetNumberFromString(command.arguments[1]);
-                                            int secs = GetNumberFromString(command.arguments[2]);
-                                            var total = TimeSpan.FromMilliseconds((mins * 60 + secs) * 1000);
-                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimeMain, event_num, total);
+                                            int s = GetNumberFromString(command.arguments[1]);
+                                            int ms = GetNumberFromString(command.arguments[2]);
+                                            var total = TimeSpan.FromMilliseconds(s * 1000 + ms);
+                                            ScoreboardControlHandler?.Invoke(Scoreboard.ScoreboardAction.AddTimerEvent, event_num, total);
                                         }
                                         catch { }
                                         break;
@@ -805,24 +811,25 @@ namespace DungeonMaster
         //events to run, tied with button IDs
         public enum ButtonEventNumbers
         {
-            StartMatchActive = 1000,
-            PausePlayActive = 1001,
-            EndMatchActive = 1002,
-            StopwatchActive = 1003,
-            RedWinsActive = 1004,
-            BlueWinsActive = 1005,
-            RedReadyActive = 1006,
-            BlueReadyActive = 1007,
-            ArenaDoorActive = 1008,
-            StartMatchInactive = 2000,
-            PausePlayInactive = 2001,
-            EndMatchInactive = 2002,
-            StopwatchInactive = 2003,
-            RedWinsInactive = 2004,
-            BlueWinsInactive = 2005,
-            RedReadyInactive = 2006,
-            BlueReadyInactive = 2007,
-            ArenaDoorInactive = 2008,
+            Ad = 1000,
+            Bd = 1001,
+            Cd = 1002,
+            Dd = 1003,
+            Ed = 1004,
+            Fd = 1005,
+            Gd = 1006,
+            Hd = 1007,
+            Id = 1008,
+
+            Au = 2000,
+            Bu = 2001,
+            Cu = 2002,
+            Du = 2003,
+            Eu = 2004,
+            Fu = 2005,
+            Gu = 2006,
+            Hu = 2007,
+            Iu = 2008,
         };
 
         public event IntDelegate? RunEventHandler; //sends output to TSC engine

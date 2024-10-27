@@ -12,7 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.IO.Ports;
+using RJCP.IO.Ports;
+//using System.IO.Ports;
 
 namespace DungeonMaster
 {
@@ -26,13 +27,13 @@ namespace DungeonMaster
         //see https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/event
         public event StringDelegate? DataGetEventHandler;// { add { handler += value; } remove { handler -= value } }
 
-        private SerialPort SerialPort = new SerialPort();
+        private SerialPortStream SerialPort = new SerialPortStream();
 
         public SerialManager()
         {
             InitializeComponent();
 
-            SerialPort.DataReceived += new SerialDataReceivedEventHandler(SerialGetCb);
+            SerialPort.DataReceived += new EventHandler<SerialDataReceivedEventArgs>(SerialGetCb); //SerialDataReceivedEventHandler(SerialGetCb);
             SerialPort.WriteTimeout = 1000;
             SerialPort.ReadTimeout = 1000;
 
@@ -40,7 +41,7 @@ namespace DungeonMaster
 
         private void PortScanButtonClicked(object sender, RoutedEventArgs e)
         {
-            var port_name_list = SerialPort.GetPortNames();
+            var port_name_list = SerialPortStream.GetPortNames();
 
             PortList.SelectedIndex = -1;
             PortList.Items.Clear();
@@ -111,7 +112,7 @@ namespace DungeonMaster
 
 
         //runs whenever we get stuff back on the serial interface
-        private void SerialGetCb(object sender, SerialDataReceivedEventArgs e)
+        private void SerialGetCb(object? sender, SerialDataReceivedEventArgs e)
         {
 
 
