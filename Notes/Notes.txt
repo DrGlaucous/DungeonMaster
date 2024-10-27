@@ -1,0 +1,17 @@
+
+this library:
+https://github.com/FastLED/FastLED
+
+
+
+The LED strip provided by the club uses:
+WS2811 (neoPixel-type) chipset
+
+the LED strips commonly avalable on amazon uses:
+WS2801 chips
+
+
+
+
+
+

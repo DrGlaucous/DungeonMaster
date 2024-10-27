@@ -6,9 +6,10 @@
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
         Title="Title A" Height="450" Width="800" Background="#FFAFAFAF">
-    <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Height="399" Width="800">
-        <Button x:Name="buttonn" Content="Buttonn" HorizontalAlignment="Left" Margin="417,0,0,0" VerticalAlignment="Center" RenderTransformOrigin="0.0,0.0" Height="25" Width="108" Click="MyMethod"/>
-        <Label x:Name="StopwatchLabel" Content="Label" HorizontalAlignment="Center" VerticalAlignment="Center" Height="64" Width="124" RenderTransformOrigin="-0.565,-0.828"/>
-        <local:SubControl1 HorizontalAlignment="Left" Margin="41,236,0,0" VerticalAlignment="Top" Height="127" Width="412"/>
+    <Grid>
+        <Button x:Name="SendButton" Content="Send" HorizontalAlignment="Left" Margin="51,19,0,0" VerticalAlignment="Top" Width="93" Click="SendButton_Click"/>
+        <ScrollViewer x:Name="ScrollContainer" Margin="85,102,123,153">
+            <TextBlock x:Name="SerialInbox" TextWrapping="Wrap" Text="TextBlock"/>
+        </ScrollViewer>
     </Grid>
 </Window>
