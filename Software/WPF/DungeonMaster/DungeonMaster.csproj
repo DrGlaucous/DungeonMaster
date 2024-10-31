@@ -14,8 +14,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="LibVLCSharp" Version="3.9.0" />
+		<PackageReference Include="LibVLCSharp.WPF" Version="3.9.0" />
 		<PackageReference Include="SerialPortStream" Version="2.4.2" />
 		<PackageReference Include="System.IO.Ports" Version="8.0.0" />
+		<PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+		<PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.21" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -4,10 +4,24 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DungeonMaster"
+             xmlns:uc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="100">
     <Grid>
-        <MediaElement x:Name="MediaBuffer" Stretch="Fill" UnloadedBehavior="Close"/>
+        <Grid x:Name="ColorKeyWrapper">
+            <!--<MediaElement x:Name="MediaBuffer" Stretch="Fill" UnloadedBehavior="Close"/>-->
+            
+            <!--<uc:VideoView x:Name="VLCMediaBuffer" Margin="56,0,0,0"/>
+            <Grid Margin="0,0,44,0">
+                <Grid.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="Black"/>
+                        <GradientStop Color="Lime" Offset="1"/>
+                    </LinearGradientBrush>
+                </Grid.Background>
+            </Grid>-->
 
+            <MediaElement x:Name="MediaBuffer" Stretch="Fill" UnloadedBehavior="Close"/>
+        </Grid>
     </Grid>
 </UserControl>

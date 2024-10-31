@@ -98,7 +98,7 @@
 <TEC
 <TEU0200:0060:0000//minute
 <TEU0201:0000:0000//end
-
+<TEU0202:0010:0000//10 seconds
 
 <AVU0000
 <AVH0000
@@ -152,6 +152,13 @@
 <END
 
 
+//10 seconds
+#0202
+<AVL0000:data/Audio/voyager-doorbell.mp3$
+<AVS0000
+<AVY0000//begin playback
+<END
+
 /////////////////////////////////
 
 
@@ -192,9 +199,20 @@
 
 
 
-
-
-
+//sauce jumpscare
+#0600
+<AVU0000
+<AVH0000
+<AVL0000:data/Video/Saauce.mp4$
+<AVS0000//stop: make sure buffer is reset
+//<WAI0001:0000//wait to make sure the media is loaded
+<AVV0000
+<AVY0000//begin playback
+<WAI0003:0000
+<AVY0000
+<WAI0005:0000
+<AVH0000
+<END
 
 
 //button down
@@ -211,6 +229,7 @@
 
 //remote buttons
 #1000 //
+<EVE0600
 <EVE0100//goto arena rev
 <EVE0900
 #1001 //

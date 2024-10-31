@@ -1,0 +1,224 @@
+//minimal script because the powers that be don't appreciate my hard work
+
+#0000
+<END
+
+
+//flags
+//flag 0100: match playing
+//flag 0110: main timer running (can pause mid-round)
+
+
+
+
+
+//main events
+
+
+//NOTE:::::
+//waits are a bodge for now... we need to fix this later
+
+
+//match startoff
+#0110
+<KEY
+//add countdown events
+<TEC
+<TEU0201:0000:0000//end
+<TIG
+<END
+
+///////////////////////////////
+
+//match END
+#0201
+<TIH<TIR
+<END
+
+
+/////////////////////////////////
+
+
+//button down
+#0900
+<MSGButton DOWN
+<END
+//button up
+#0901
+<MSGButton UP
+<END
+
+///////////////////////
+//button DOWN events
+
+//remote buttons
+#1000 //start match timer
+<EVE0110
+<EVE0900
+#1001 //KO / stop + reset match timer
+<EVE0201
+<EVE0900
+#1002 //nothing
+<EVE0900
+#1003 //PIN stopwatch
+<SWR<SWG
+<END
+#1004 //pause timer
+<TIH
+<END
+#1005 //resume timer
+<TIG
+<END
+#1006 //nothing
+<EVE0900
+#1007 //hot reload tsc
+//hot-reload script
+<MSGReloading TSC
+<TRA0000:Script.tsc.txt$
+<EVE0900
+#1008 //arena door
+<EVE0900
+#1009
+<EVE0900
+#1010
+<EVE0900
+
+///////////////////////
+//button UP events
+
+
+#2000 //start match
+<EVE0901
+#2001 //pause-play
+<EVE0901
+#2002 //end match
+<EVE0901
+#2003 //stopwatch
+<SWH
+<END
+<EVE0901
+#2004 //red wins
+<EVE0901
+#2005 //blue wins
+<EVE0901
+#2006 //red ready
+<EVE0901
+#2007 //blue ready
+<EVE0901
+#2008 //arena door
+<EVE0901
+#2009 //x
+<EVE0901
+#2010 //x
+<EVE0901
+
+
+
+///////////////////////
+//light helpers
+
+
+
+////////////////////////////selection helpers
+
+//select all RGB lights in box strip
+#3000
+<SLT0002:0052:0001
+<POP
+
+//select all odds
+#3001
+<SLT0003:0052:0002
+<POP
+
+//select all evens
+#3002
+<SLT0002:0052:0002
+<POP
+
+//12-13-12-13
+//select edge 1
+#3010
+<SLT0002:0014:0001
+<POP
+
+//edge 2
+#3011
+<SLT0014:0027:0001
+<POP
+
+//edge 3
+#3012
+<SLT0027:0039:0001
+<POP
+
+//edge 4
+#3013
+<SLT0039:0052:0001
+<POP
+
+
+///////////////////////action helpers
+
+//reset all parameters
+#4000
+<CLC<RLI<RLT
+<POP
+
+//push rainbow sequence, 3 seconds
+#4001
+<PLC0255:0000:0000:1000
+<PLC0000:0255:0000:1000
+<PLC0000:0000:0255:1000
+<POP
+
+//50% duty cycle between off and white, 0.5 seconds each
+#4002
+<PLC0255:0255:0255:0001
+<PLC0255:0255:0255:0500
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0500
+<POP
+
+//red "heartbeat", 1 second
+#4003
+<PLC0255:0000:0000:0001
+<PLC0255:0000:0000:0100
+
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0100
+
+<PLC0255:0000:0000:0001
+<PLC0255:0000:0000:0100
+
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:1000
+
+<POP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
