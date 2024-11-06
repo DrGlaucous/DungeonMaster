@@ -29,6 +29,9 @@ namespace DungeonMaster
 
         private SerialPortStream SerialPort = new SerialPortStream();
 
+        //used for local button state (to try and match SerialPort state)
+        private bool has_connected = false;
+        
         public SerialManager()
         {
             InitializeComponent();
@@ -54,10 +57,11 @@ namespace DungeonMaster
 
         private void ConnectButtonClicked(object sender, RoutedEventArgs e)
         {
-            if (SerialPort.IsOpen) //(has_connected)
+            //port is connected or the button says it's connected (even if it isn't)
+            if (SerialPort.IsOpen || has_connected)
             {
                 SerialPort.Close();
-                //has_connected = false;
+                has_connected = false;
                 ConnectButton.Content = "Connect";
             }
             else
@@ -80,7 +84,7 @@ namespace DungeonMaster
                 try
                 {
                     SerialPort.Open();
-                    //has_connected = true;
+                    has_connected = true;
                     ConnectButton.Content = "Disconnect";
                 }
                 catch { } //do nothing for now

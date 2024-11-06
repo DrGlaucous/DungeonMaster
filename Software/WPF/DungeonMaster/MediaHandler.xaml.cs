@@ -80,28 +80,6 @@ namespace DungeonMaster
         }
 
 
-        //methods for the VLC player (which doesn't support color keying)
-        /*
-        //alert tie-ins that the media has actually started playing
-        private void MMXT(object? sender, EventArgs e)
-        {
-            for (int i = 0; i < 10; ++i)
-            {
-                var tt = 9 + i;
-            }
-
-            BufferStartCallback?.Invoke();
-        }
-
-        //called when the overlay is closed
-        private void UnloadControl(object sender, RoutedEventArgs e)
-        {
-            _mediaPlayer.Stop();
-            _mediaPlayer.Dispose();
-            _libVLC.Dispose();
-        }
-        */
-
 
         //path should be a local directory without the leading "./".
         //returns true if load was success
@@ -119,17 +97,6 @@ namespace DungeonMaster
                 MediaBuffer.Source = ueri;
                 MediaBuffer.Visibility = Visibility.Visible;
 
-                //var media = new Media(_libVLC, ueri);
-                //VLCMediaBuffer.MediaPlayer.Media = media; //todo: fix this warning
-
-
-                //from example:
-                //if (!VLCMediaBuffer.MediaPlayer.IsPlaying)
-                //{
-                //    using (var media = new Media(_libVLC, new Uri("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")))
-                //        VLCMediaBuffer.MediaPlayer.Play(media);
-                //}
-
             }
             catch { return false; }
 
@@ -141,7 +108,7 @@ namespace DungeonMaster
                 //stop old source first
                 StopAVMedia();
                 MediaBuffer.Close();
-
+                MediaIsLoaded = false;
 
             }
             catch { }
@@ -151,19 +118,12 @@ namespace DungeonMaster
         {
             MediaBuffer.Stop();
             MediaIsPaused = true;
-
-            //VLCMediaBuffer.MediaPlayer.Stop();
-
             return true;
         }
 
         public bool PauseAVMedia() {
             MediaBuffer.Pause();
             MediaIsPaused = true;
-
-            //VLCMediaBuffer.MediaPlayer.Pause();
-
-
             return true;
         }
         public bool PlayAVMedia() {
@@ -171,21 +131,18 @@ namespace DungeonMaster
 
             if (!MediaIsLoaded)
                 return false;
+
             MediaBuffer.Play();
             MediaIsPaused = false;
-
-
-            //VLCMediaBuffer.MediaPlayer.Play();
-
 
             return true;
         }
 
 
-        //alert tie-ins that the media has actually started playing
+        //alert tie-ins that the media has finished loading and can be played immedately
         private void DoneLoading(object sender, RoutedEventArgs e) {
             MediaIsLoaded = true;
-            BufferStartCallback?.Invoke();            
+            BufferStartCallback?.Invoke(); //breakout of of TSC wait
         }
         private void ErrorHappened(object? sender, ExceptionRoutedEventArgs e)
         {

@@ -12,6 +12,34 @@ WS2801 chips
 
 
 
+//json format for hotkey buttons
+
+Button name:
+Button color: (RGB)
+Button event number:
 
 
-
+{
+    "buttons": [
+        {
+            "name": "Name",
+            "color": "#0000FF",
+            "event": 1200
+        },
+        {
+            "name": "Name",
+            "color": "#0000FF",
+            "event": 1200
+        },
+        {
+            "name": "Name",
+            "color": "#0000FF",
+            "event": 1200
+        },
+        {
+            "name": "Name",
+            "color": "#0000FF",
+            "event": 1200
+        }
+    ]
+}

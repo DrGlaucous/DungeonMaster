@@ -92,7 +92,11 @@ class TscParser {
     int16_t get_numeric(const char** cursor, bool should_increment = true);
 
     //returns true if parse was successful, pushes command arguments to the command queue
+    //will check for proper command count
     bool parse_tsc_arg_count(const char** cursor, const char* end_cursor, int arg_count, TscCommandType type);
+
+    //will parse commands blindly until it hits an '<' or the end_of_cursor (which is the NULL terminator) or TSC_MAX_ARG_COUNT
+    //bool parse_tsc_cmd(const char** cursor, const char* end_cursor, TscCommandType type);
 
 };
 

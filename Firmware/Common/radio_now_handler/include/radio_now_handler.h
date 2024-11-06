@@ -155,7 +155,8 @@ class RadioNowHandler
     RadioNowHandler(
         uint32_t net_id, //must be the same for all units on the network
         const char* key_p, //main key (not encrypted if NULL)
-        const char* my_address
+        const char* my_address,
+        uint32_t queue_length = 1//how many items to store in the ISR queue
     );
     ~RadioNowHandler();
 
@@ -163,7 +164,7 @@ class RadioNowHandler
     bool add_peer(const char* peer_address, const char* key_s);
 
     //if peer_address is null, the message is broadcast
-    TXStatus send_packet(RemoteGenericPacket packet, const char* peer_address);
+    TXStatus send_packet(RemoteGenericPacket packet, const char* peer_address, int try_count = 1);
 
 
     RemoteGenericPacket get_last_packet();

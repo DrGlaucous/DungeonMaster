@@ -26,9 +26,8 @@
 <AVU0000
 <AVL0000:data/Audio/arena-charge.mp3$
 <AVS0000//stop: make sure buffer is reset
-<MSGWait
-<WAI0000:0300//wait to make sure the media is loaded
-<MSGEnd Wait
+<WAI0005:0000//wait to make sure the media is loaded
+<MSGMedia Loaded
 <AVY0000//begin playback
 //begin making lights go
 <TGT0002//target box
@@ -57,7 +56,7 @@
 <PLC0000:0255:0000:0200
 <PLC0000:0000:0255:0001
 <PLC0000:0000:0255:0200
-<WAI0000:0010
+//<WAI0000:0010
 <SLR0400
 <WAI0001:0000
 
@@ -74,7 +73,7 @@
 <WAI0000:0800
 
 <PSH3000//back to all lights
-<PSH4000<WAI0000:0010
+<PSH4000//<WAI0000:0010
 <PLC0255:0255:0255:0100 //fullbright, then all black
 <PLC0000:0000:0000:0100
 <PLC0000:0000:0000:1000
@@ -82,6 +81,91 @@
 <WAI0000:3100
 <CLC
 <PLC0255:0255:0255:1000
+<FRE<END
+
+
+
+//test: send them all at once to see how many packets are dropped
+#0101
+<KEY
+<TGT0002//target box
+<PSH3000//select all box lights
+<PSH4000//reset light programs
+<PLC0255:0255:0000:0001
+<PLC0255:0255:0000:0100
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0100//4
+
+<PLC0255:0255:0255:0001
+<PLC0255:0255:0255:0100
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0100//4
+
+
+<PLC0000:0255:0255:0001
+<PLC0000:0255:0255:0100
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0100//4
+
+
+<PLC0255:0255:0255:0001
+<PLC0255:0255:0255:0100
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0100//4
+
+
+<PLC0000:0255:0255:0001
+<PLC0000:0255:0255:0100
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0100//4
+
+<PLC0255:0255:0255:0001
+<PLC0255:0255:0255:0100
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0100//4
+
+
+<PLC0000:0255:0255:0001
+<PLC0000:0255:0255:0100
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0100//4
+
+
+
+//<WAI0001:0000//switch between modes after x seconds
+//<PSH4000
+<PLC0255:0255:0000:0001
+<PLC0255:0255:0000:0100
+<PLC0000:0000:0000:0001
+<PLC0000:0000:0000:0100//8
+//<WAI0001:0000//switch between modes after x seconds
+//<PSH4000
+<PLC0255:0000:0000:0001
+<PLC0255:0000:0000:0200
+<PLC0000:0255:0000:0001
+<PLC0000:0255:0000:0200
+<PLC0000:0000:0255:0001
+<PLC0000:0000:0255:0200
+<PLC0255:0000:0000:0001
+<PLC0255:0000:0000:0200
+<PLC0000:0255:0000:0001
+<PLC0000:0255:0000:0200
+<PLC0000:0000:0255:0001
+<PLC0000:0000:0255:0200//20
+<PLC0255:0000:0000:0001
+<PLC0255:0000:0000:0200
+<PLC0000:0255:0000:0001
+<PLC0000:0255:0000:0200
+<PLC0000:0000:0255:0001
+<PLC0000:0000:0255:0200
+<PLC0255:0000:0000:0001
+<PLC0255:0000:0000:0200
+<PLC0000:0255:0000:0001
+<PLC0000:0255:0000:0200//30
+<PLC0000:0000:0255:0001
+<PLC0000:0000:0255:0200
+//<CLC
+<PLC0255:0255:0255:1000//33
 <FRE<END
 
 
@@ -96,67 +180,103 @@
 
 //add countdown events
 <TEC
-<TEU0200:0060:0000//minute
-<TEU0201:0000:0000//end
-<TEU0202:0010:0000//10 seconds
+<TEU0200:0065:0000//minute preload
+<TEU0201:0060:0000//minute
+
+<TEU0210:0000:0000//end (no preload)
+
+
+<TEU0220:0015:0000//10 seconds PL
+<TEU0221:0010:0000//10 seconds
+
 
 <AVU0000
 <AVH0000
 <AVL0000:data/Video/Countdown321.mp4$
 <AVS0000//stop: make sure buffer is reset
 <MSGWait
-<WAI0001:0000//wait to make sure the media is loaded
+<WAI0010:0000//wait to make sure the media is loaded (extra wait is skipped once the media loads)
 <MSGEnd Wait
 <AVV0000
 <AVY0000//begin playback
 <TGT0002//target box
 <PSH3000//select just evens
 <PSH4000//clear old
-<PLC0000:0255:0000:0001
+<PLC0000:0255:0000:0001 //pulse green with the counter
 <PLC0255:0255:0255:1000
 <WAI0004:0000
 <PSH4000
-<PLC0255:0255:0255:0001
+<PLC0255:0255:0255:0001 //return to white
 <PLC0255:0255:0255:1000
 <TIG
 <END
 
-//emergency white
+//emergency white (sets light on button press)
 #0150
 <TGT0002//target box
 <PSH3000//select all box lights
 <PSH4000//reset light programs
-<PLC0255:0255:0255:0001
+<PLC0255:0255:0255:0001 //set to white immediately
 <PLC0255:0255:0255:1000
-<TIH
 <END
 
 ///////////////////////////////
 
-//one minute left
+//one minute left pre-load
 #0200
-<MSGONE MINUTE
+<MSGONE MINUTE PL
+<AVH0000//hide old media in case it was a video
 <AVL0000:data/Audio/one-minute.mp3$
 <AVS0000
-<AVY0000//begin playback
 <END
 
-//match END
+//begin playback
 #0201
-<TIH<TIR
-<MSGEND
 <MSGONE MINUTE
+<AVS0000
+<AVY0000
+<END
+
+//match END normal
+#0210
+//sound is part of the 10 second countdown
+<TIH<TIR//halt timer
+<EVE0150//reset lights
+<END
+
+//match END early (from K-O)
+#0211
+<KEY
+<TIH<TIR//halt timer
+<MSGEND
+<AVH0000
 <AVL0000:data/Audio/buzzer.mp3$
 <AVS0000
+<WAI0010:0000//ensure media is loaded
 <AVY0000//begin playback
+<FRE//other commands can now run: waiting is over
+<EVE0150//reset lights
 <END
 
 
-//10 seconds
-#0202
-<AVL0000:data/Audio/voyager-doorbell.mp3$
+//10 seconds preload media
+#0220
+<MSG10S preload
+<AVH0000
+<AVL0000:data/Audio/tensec-countdown.mp3$//-beep.mp3$
+<AVS0000
+<END
+
+#0221
+<MSG10S playback
 <AVS0000
 <AVY0000//begin playback
+//setup lights
+<TGT0002//select box
+<PSH3000//select box lights
+<PSH4000//clear old light sequence
+<PLC0255:0000:0000:0001 //pulse red with the counter
+<PLC0255:0255:0255:1000
 <END
 
 /////////////////////////////////
@@ -201,19 +321,46 @@
 
 //sauce jumpscare
 #0600
+<KEY
+<MSG6000
 <AVU0000
 <AVH0000
-<AVL0000:data/Video/Saauce.mp4$
+//<AVL0000:data/Video/Sauce.mp4$
+<AVL0000:data/Audio/voyager-doorbell.mp3$
 <AVS0000//stop: make sure buffer is reset
-//<WAI0001:0000//wait to make sure the media is loaded
+<WAI0005:0000//wait to make sure the media is loaded
+<MSGLoaded
 <AVV0000
 <AVY0000//begin playback
-<WAI0003:0000
-<AVY0000
+<FRE
 <WAI0005:0000
 <AVH0000
 <END
 
+//same, no reload
+#0601
+<MSG6001
+<AVS0000
+<AVY0000
+<END
+
+//pause
+#0602
+<MSG6002
+<AVP0000
+<END
+
+//play
+#0603
+<MSG6003
+<AVY0000
+<END
+
+//stop
+#0604
+<MSG6004
+<AVS0000
+<END
 
 //button down
 #0900
@@ -229,16 +376,20 @@
 
 //remote buttons
 #1000 //
-<EVE0600
+//<EVE0101//test: push out lots of light commands
 <EVE0100//goto arena rev
 <EVE0900
 #1001 //
+//<EVE0601//sauce2
 <EVE0110//goto start match
 <EVE0900
 #1002 //KO
-<EVE0201
+//<EVE0603
+<MSGevent 211
+<EVE0211
 <EVE0900
 #1003 //pin timer
+//<EVE0604
 <SWR<SWG
 <END
 #1004 //pause timer
@@ -269,6 +420,7 @@
 #2000 //start match
 <EVE0901
 #2001 //pause-play
+<EVE0602
 <EVE0901
 #2002 //end match
 <EVE0901

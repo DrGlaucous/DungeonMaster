@@ -44,7 +44,20 @@ namespace DungeonMaster
 
         //delegates for updating some methods from outside threads
         //delegate void TimespanMethodInvoker(TimeSpan time);
-        //delegate void VoidMethodInvoker();
+
+        //run a wait-break event from the media buffers
+        public event VoidDelegate BufferStartCallback {
+            add
+            {
+                MediaBuf1.BufferStartCallback += value;
+                MediaBuf2.BufferStartCallback += value;
+            } 
+            remove
+            {
+                MediaBuf1.BufferStartCallback -= value;
+                MediaBuf2.BufferStartCallback -= value;
+            }
+        }
 
 
         public enum ScoreboardAction

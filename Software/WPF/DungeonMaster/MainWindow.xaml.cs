@@ -90,6 +90,9 @@ namespace DungeonMaster
 
                 Scoreboard.TimeMajorUpdateHandler += new TimespanDelegate(StreamOverlay.UpdateMainTimeDisplay);
                 Scoreboard.TimeMinorUpdateHandler += new TimespanDelegate(StreamOverlay.UpdateSecondTimeDisplay);
+
+                //link media-load-breakout to the TSC engine
+                Scoreboard.BufferStartCallback += TextScriptEngine.CutWait;
             }
 
 

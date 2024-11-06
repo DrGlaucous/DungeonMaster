@@ -34,7 +34,8 @@ void packet_got_callback(const uint8_t * mac, const uint8_t *incomingData, int l
     memcpy(len_concat, &len, sizeof(len));
     memcpy(len_concat + sizeof(len), incomingData, len);
 
-    xQueueOverwriteFromISR(gotten_data_holder, len_concat, &high_task_wakeup);
+    xQueueSendToBackFromISR(gotten_data_holder, len_concat, &high_task_wakeup);
+    //xQueueOverwriteFromISR(gotten_data_holder, len_concat, &high_task_wakeup);
 }
 
 //delta time
@@ -54,7 +55,8 @@ bool RadioNowHandler::some_initialized = false;
 RadioNowHandler::RadioNowHandler(
     uint32_t net_id,
     const char* key_network,
-    const char* my_address
+    const char* my_address,
+    uint32_t queue_length
 )
 {
     //do not make it more than once
@@ -68,7 +70,7 @@ RadioNowHandler::RadioNowHandler(
     if(gotten_data_holder == NULL)
     {
         //create the callback data queue if it's not already present (max esp_now queue size + size of int for storing packet size)
-        gotten_data_holder = xQueueCreate(1, ESP_NOW_MAX_DATA_LEN + sizeof(int));
+        gotten_data_holder = xQueueCreate(queue_length, ESP_NOW_MAX_DATA_LEN + sizeof(int));
     }
 
     //check again for successful queue creation
@@ -201,14 +203,22 @@ bool RadioNowHandler::add_peer(const char* peer_address, const char* key_peer) {
 
 }
 
-TXStatus RadioNowHandler::send_packet(RemoteGenericPacket packet, const char* peer_address) {
+TXStatus RadioNowHandler::send_packet(RemoteGenericPacket packet, const char* peer_address, int try_count) {
 
     if(!active || packet.get_transmission_len() > ESP_NOW_MAX_DATA_LEN)
         return TX_FAIL;
 
     auto size = packet.get_transmission_len();
 
-    esp_err_t result = esp_now_send((const uint8_t*)peer_address, packet.get_transmission_ptr(), size);
+    esp_err_t result = ESP_FAIL;
+    for(int i = 0; i < try_count; ++i) {
+        result = esp_now_send((const uint8_t*)peer_address, packet.get_transmission_ptr(), size);
+
+        //break out if send was success
+        if(!result) {
+            break;
+        }
+    }
 
 
     if(result)

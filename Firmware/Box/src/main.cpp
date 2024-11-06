@@ -91,7 +91,8 @@ void setup()
     handler = new RadioNowHandler(
         NETWORKID,
         key_net,
-        my_id.mac_address
+        my_id.mac_address,
+        20
     );
 
     //set up network devices (only need the dongle since we're not talking to the other stuff directly)
@@ -124,7 +125,7 @@ void setup()
 void loop() {
 
     //check for packets gotten from dongle
-    if(handler->check_for_packet() == RX_SUCCESS) {
+    while(handler->check_for_packet() == RX_SUCCESS) {
 
         auto packet = handler->get_last_packet();
 

@@ -7,6 +7,7 @@
 #include <vector>
 
 using std::vector;
+using std::string;
 
 const char key_net[] = ENCRYPTKEY_NETWORK;
 const DeviceInfo& my_id = g_dongle_1;
@@ -19,6 +20,8 @@ TscParser parser;
 //input serial data will be split at random points, so we need to organize it by newlines (there may be more than one command per string)
 char* leftover_data = NULL;
 int leftover_data_size = 0;
+
+string input_data = "";
 
 //if-else chain to select proper device with UUID. uses dongle UUID if not found
 void set_radio_target(size_t uuid) {
@@ -64,7 +67,11 @@ void run_parse_actions() {
                     //Serial.printf("Sent packet to %d\n", current_device_target->uu_id);
                     //Serial.printf("%s\n", &string_cmd[0]);
 
-                    handler->send_packet(packet, (char*)current_device_target->mac_address);
+                    auto result = handler->send_packet(packet, (char*)current_device_target->mac_address, 5);
+                    if(result == TXStatus::TX_FAIL) {
+                        Serial.printf("FAIL\n");
+                    }
+
                 }
                 break;
             }
@@ -80,7 +87,8 @@ void setup()
     handler = new RadioNowHandler(
         NETWORKID,
         key_net,
-        my_id.mac_address
+        my_id.mac_address,
+        20
     );
 
     //set up network devices
@@ -108,17 +116,31 @@ void loop() {
         char* byte_holder = (char*)calloc(byte_count + 1, 1);
         Serial.readBytes(byte_holder, byte_count);
 
+        {
+            //append new data to the data-holding string
+            input_data += byte_holder;
+
+            free(byte_holder);
+
+            const char* start = input_data.c_str();
+            const char* end = parser.parse_tsc(start);
+            int span = end - start;
+
+            //get from the last spot to the end
+            input_data = input_data.substr(span);
+
+            //Serial.printf("~~%s**", input_data.c_str());
+
+        }
+
         //Serial.printf("%s~~", byte_holder);
-
-        parser.parse_tsc(byte_holder);
-        
-        free(byte_holder);
-
+        //free(byte_holder);
         run_parse_actions();
     }
     */
 
 
+    
     
     //check for commands sent over serial
     auto byte_count = Serial.available();
@@ -253,7 +275,7 @@ void loop() {
 
 
     //check for packets gotten back from perepherials
-    if(handler->check_for_packet() == RX_SUCCESS) {
+    while(handler->check_for_packet() == RX_SUCCESS) {
 
         auto packet = handler->get_last_packet();
 

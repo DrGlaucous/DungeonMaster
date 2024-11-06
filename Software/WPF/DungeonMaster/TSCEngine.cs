@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Shapes;
 
 
+
 namespace DungeonMaster
 {
 
@@ -692,6 +693,7 @@ namespace DungeonMaster
         //run events until queue is empty
         private void DrainEvents()
         {
+
             //if not keyed or engine is idleing, begin the event immediately
             while ((!key || state == EngineState.Idle) && event_queue.Count > 0)
             {
@@ -746,6 +748,27 @@ namespace DungeonMaster
             //try to empty the remaining queue
             DrainEvents();
 
+        }
+
+        //works just like ResumeFromWait except it can be called from an outside inturrupt (for things like when we wait for the media to load)
+        //potential problem if wait times out and we enter another wait when this is called (it will cut that wait short)
+        public void CutWait() {
+
+            //if the timer has timed out, don't try to run this
+            if (!wait_timer.Enabled) { return; }
+
+            //stop the timer running and run the event now instead
+            wait_timer.Stop();
+
+            if (event_stack.Count > 0)
+            {
+                //run starting where we left off.
+                var (event_index, cmd_no) = event_stack.Pop();
+                FindRunEvent(event_list[event_index].Event, event_index, cmd_no);
+            }
+
+            //try to empty the remaining queue
+            DrainEvents();
         }
 
         private bool SetFlag(int flag_no, bool state)
@@ -834,44 +857,56 @@ namespace DungeonMaster
 
         public event IntDelegate? RunEventHandler; //sends output to TSC engine
 
-        //currently parses one input at a time
+        //can now parse multiple inputs at once
         public void ParseResponse(string input)
         {
+            //multi-line test
+            //input = "<1:1:1:1000\n<1:1:1:2000\n";
+
             try
             {
-                //test
-                //input = "<1:13:1:12 O\n";
+                //split by command delimiter
+                string[] split_commands = Regex.Split(input, "(?=<)");
 
-                string[] split_strings = Regex.Split(input, "[<:]");
+                foreach (var command in split_commands) {
 
-                //all responses should have 4 parts (+1 for anything that comes before the '<')
-                if (split_strings.Length < 5)
-                {
-                    return;
+                    //test
+                    //input = "<1:13:1:12 O\n";
+
+                    string[] split_strings = Regex.Split(command, "[<:]");
+
+                    //all responses should have 4 parts (+1 for anything that comes before the '<')
+                    if (split_strings.Length < 5)
+                    {
+                        continue;
+                    }
+
+                    DeviceType device_type = (DeviceType)Int32.Parse(split_strings[1]);
+                    int device_id = Int32.Parse(split_strings[2]);
+                    ResponseType response_type = (ResponseType)Int32.Parse(split_strings[3]);
+                    string response_data = split_strings[4];
+
+                    switch (response_type)
+                    {
+                        default: { break; }
+                        case ResponseType.ButtonStatus:
+                            {
+                                //string[] split_response = Regex.Split(response_data, " ");
+                                //int button_id = Int32.Parse(split_response[0]);
+                                //bool status = split_response[1][0] == 'O';
+                                ////run event based on button number + status "on" events are 1000 range, "off" events are 2000 range
+                                //int event_num = 1000 * (status ? 1 : 2) + button_id;
+
+                                //now we run the command prescribed directly by the response.
+                                int event_num = Int32.Parse(response_data);
+                                RunEventHandler?.Invoke(event_num);
+
+                                break;
+                            }
+                    }
+
                 }
 
-                DeviceType device_type = (DeviceType)Int32.Parse(split_strings[1]);
-                int device_id = Int32.Parse(split_strings[2]);
-                ResponseType response_type = (ResponseType)Int32.Parse(split_strings[3]);
-                string response_data = split_strings[4];
-
-                switch (response_type)
-                {
-                    default: { break; }
-                    case ResponseType.ButtonStatus:
-                        {
-                            //string[] split_response = Regex.Split(response_data, " ");
-                            //int button_id = Int32.Parse(split_response[0]);
-                            //bool status = split_response[1][0] == 'O';
-
-                            ////run event based on button number + status "on" events are 1000 range, "off" events are 2000 range
-                            //int event_num = 1000 * (status ? 1 : 2) + button_id;
-                            int event_num = Int32.Parse(response_data);
-                            RunEventHandler?.Invoke(event_num);
-
-                            break;
-                        }
-                }
 
             }
             catch
