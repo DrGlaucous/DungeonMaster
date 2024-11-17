@@ -16,9 +16,14 @@ RadioNowHandler* handler;
 
 TscParser parser;
 
+//pins in use for the buttons:
+//22,23 (blue)
+//19,21 (red)
+//19,22 are LED pins
+
 //2 buttons for the remote
 int array_size = 2;
-int input_array[] = {19, 32};
+int input_array[] = {23, 21};
 
 Bounce2::Button button_array[2] = {};
 
@@ -35,9 +40,7 @@ int release_array[] = {
 };
 
 
-//LightEffectHandler le_handler = LightEffectHandler(0, (const DirectLedPins*)remote_led_addresses, 8);
-
-//test for led strip
+//handler object for all box lights
 LightEffectHandler* le_handler;// = LightEffectHandler(8, NULL, 0);
 
 unsigned long last_time_millis = 0;
@@ -104,7 +107,6 @@ void setup()
     //voltmeter
     pinMode(34, INPUT);
     
-    //test
     //buttons + leds
     for(int i = 0; i < array_size; ++i) {
         //pinMode(input_array[i], INPUT_PULLUP);

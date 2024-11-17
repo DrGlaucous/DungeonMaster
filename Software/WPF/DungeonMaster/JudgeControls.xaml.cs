@@ -85,6 +85,16 @@ namespace DungeonMaster
                         button_id = is_pressed ? ButtonEventNumbers.Fd : ButtonEventNumbers.Fu;
                         break;
                     }
+                case "G":
+                    {
+                        button_id = is_pressed ? ButtonEventNumbers.Gd : ButtonEventNumbers.Gu;
+                        break;
+                    }
+                case "H":
+                    {
+                        button_id = is_pressed ? ButtonEventNumbers.Hd : ButtonEventNumbers.Hu;
+                        break;
+                    }
                 default: { return; }
             }
 

@@ -56,12 +56,12 @@ namespace DungeonMaster
             {
                 case "RedReadyButton":
                     {
-                        button_id = is_pressed ? ButtonEventNumbers.Gd : ButtonEventNumbers.Gu;
+                        button_id = is_pressed ? ButtonEventNumbers.Jd : ButtonEventNumbers.Ju;
                         break;
                     }
                 case "BlueReadyButton":
                     {
-                        button_id = is_pressed ? ButtonEventNumbers.Hd : ButtonEventNumbers.Hu;
+                        button_id = is_pressed ? ButtonEventNumbers.Id : ButtonEventNumbers.Iu;
                         break;
                     }
                 default: { return; }

@@ -136,8 +136,8 @@ const DirectLedPins remote_led_addresses[] =  {
 #define BOX_RGB_LED_COUNT 50 //number neopixel-type leds within the box, addresses start where the box_led_addresses end
 //2 leds for each "ready button"
 const DirectLedPins box_led_addresses[] =  {
-    DirectLedPins{4,-1,-1}, //0
-    DirectLedPins{25,-1,-1}, //1
+    DirectLedPins{-1,-1,22}, //Blue
+    DirectLedPins{19,-1,-1}, //Red
 };
 
 

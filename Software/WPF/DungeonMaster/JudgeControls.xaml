@@ -15,13 +15,16 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
-        <Button x:Name="A" Content="A" Background="#FFC3FFC1" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
-        <Button x:Name="B" Grid.Column="1" Content="B" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
-        <Button x:Name="C" Content="C" Grid.Row="1" Background="#FFFEFFB9" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
-        <Button x:Name="D" Grid.Column="1" Content="D" Grid.Row="1" Background="#FFFFB1B1" PreviewMouseDown="ButtonClick"  PreviewMouseUp="ButtonRelease"/>
-        <Button x:Name="E" Content="E" Grid.Row="2" Background="#FFFFB0B0" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
-        <Button x:Name="F" Grid.Column="1" Content="F" Grid.Row="2" Background="#FFAFC7FF" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="A" Content="Rev" Background="#FFC3FFC1" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="B" Grid.Column="1" Content="Start" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="C" Content="KO/Stop" Grid.Row="1" Background="#FFFEFFB9" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="D" Grid.Column="1" Content="Pin" Grid.Row="1" Background="#FFFFB1B1" PreviewMouseDown="ButtonClick"  PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="E" Content="Pause" Grid.Row="2" Background="#FFFFB0B0" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="F" Grid.Column="1" Content="Play" Grid.Row="2" Background="#FFAFC7FF" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
 
+        <Button x:Name="G" Content="White" Grid.Row="3" Background="White" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
+        <Button x:Name="H" Grid.Column="1" Content="TSC" Grid.Row="3" Background="#FFFFE539" PreviewMouseDown="ButtonClick" PreviewMouseUp="ButtonRelease"/>
     </Grid>
 </UserControl>

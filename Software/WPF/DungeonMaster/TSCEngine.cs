@@ -621,6 +621,7 @@ namespace DungeonMaster
                                                 command_start_index = 0;
                                                 event_start_index = 0;
                                                 seeking = true;
+                                                state = EngineState.Running;
                                             }
                                             else
                                             {
@@ -843,6 +844,7 @@ namespace DungeonMaster
             Gd = 1006,
             Hd = 1007,
             Id = 1008,
+            Jd = 1009,
 
             Au = 2000,
             Bu = 2001,
@@ -853,6 +855,7 @@ namespace DungeonMaster
             Gu = 2006,
             Hu = 2007,
             Iu = 2008,
+            Ju = 2009,
         };
 
         public event IntDelegate? RunEventHandler; //sends output to TSC engine

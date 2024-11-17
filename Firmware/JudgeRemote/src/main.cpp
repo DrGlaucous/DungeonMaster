@@ -40,8 +40,8 @@ output pins
 
 int array_size = 8;
 int input_array[] = {19, 32, 21, 33, 22, 27, 23, 14};
-int output_array[] = {4, 25, 16, 26, 17, 12, 5, 13};
-int last_button_state_array[] = {0,0,0,0,0,0,0,0};
+//int output_array[] = {4, 25, 16, 26, 17, 12, 5, 13};
+//int last_button_state_array[] = {0,0,0,0,0,0,0,0};
 
 Bounce2::Button button_array[8] = {};
 
@@ -152,6 +152,11 @@ void setup()
     }
 
 
+    //setup analog reader and low battery LED
+    //pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(34, INPUT);
+
+
     last_time_millis = millis();
 
     Serial.println("ready");
@@ -159,6 +164,31 @@ void setup()
 }
 
 void loop() {
+
+    //low battery error: stop running normal stuff and instead do this
+    //our safe target voltage should be 9.6V, or 3.2v per cell
+    //volt to analog reading tests:
+    //17.1 - 1715 || 8.8 - 790 || 9.6 - 880
+    //check for voltage level greater than 0 in case we're running tests plugged into USB power
+    auto voltage_level = analogRead(34);
+    if (voltage_level > 0 && voltage_level < 880) {
+
+        //blink rapidly all button lights
+        while(1) {
+            for(int i = 0; i < sizeof(remote_led_addresses) / sizeof(DirectLedPins); ++i) {
+                auto pin_no = remote_led_addresses[i].r_pin;
+                analogWrite(pin_no, 255);
+            }
+            delay(100);
+            for(int i = 0; i < sizeof(remote_led_addresses) / sizeof(DirectLedPins); ++i) {
+                auto pin_no = remote_led_addresses[i].r_pin;
+                analogWrite(pin_no, 0);
+            }
+            delay(100);
+            Serial.printf("Low Power! Please replace battery with a charged 12v\n");
+        }
+    }
+
 
     //check for packets gotten from dongle
     while(handler->check_for_packet() == RX_SUCCESS) {

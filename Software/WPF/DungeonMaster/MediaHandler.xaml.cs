@@ -16,8 +16,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 
-using LibVLCSharp.Shared;
-using LibVLCSharp.WPF;
+//using LibVLCSharp.Shared;
+//using LibVLCSharp.WPF;
 
 namespace DungeonMaster
 {
@@ -27,8 +27,8 @@ namespace DungeonMaster
     public partial class MediaHandler : UserControl
     {
 
-        LibVLC _libVLC;
-        LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
+        //LibVLC _libVLC;
+        //LibVLCSharp.Shared.MediaPlayer _mediaPlayer;
 
         public event VoidDelegate? BufferStartCallback;
 
